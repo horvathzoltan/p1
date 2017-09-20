@@ -1,0 +1,364 @@
+
+1. induláskor user, role - API tömörítve binárisan kommunikál - megkapja azokat az API hívásokat amihez van role-ja, és úgy épülnek be a menübe, mint mármely helyi funkció
+2. menüt kirak, minden modul a saját menüjével beépül
+    - menü-> művelet időbélyeg, guid
+    - ha van fent újabb a megvalósító dll-ből, le kell szedni
+    - ha van fent újabb a keretrendszerből, figyelmeztetni kell, és egy alkalmas időpontben elvégezni a frissítést
+        - pl amikor épp visszalép a főmenübe
+        - ha x ideje idle, akkor visszalép -> frissíthet, pl: Chrome, Skype
+3. Az adatokat táblázatban mentjük, és ix-el hivtkozunk. Ha módosul valami, az esedetiből készül egy árnyék, majd az erdeti felülírható. Az egy műveletben keletkezett változások viszavonhatók
+    - az adott műveletben előálló változást (CRUD) vonatkozásában a visszavonandó művelet(mindíg a legutolsó lehet, mert eggymás eredményére vonatkoznak) guid-ja alapján vissza kell állítani
+        -C Törölni guid alapján - üres helyként adminisztrálni, később felülíródik, így az ix-e érvénytelenné válik
+        -R - nem okoz változást
+        -U Felülírni guid alapján az árnyékával - ix helyben marad
+        -D Visszaállítani az árnyék alapján -> új ix-et kap, ha az eredeti helyen felülíródott már
+
+         -törléskor lyukak keletkeznek, amiket lehet töltögetni az utolsó szabad hely ix-e alapján.
+            - 1. egy elem az első szabad helyre kerülhet - egy korábban törölt elem helyére pl. -> firstEmpty_ix
+            - 2. a táblázat utolsó eleme után kerülhet, ami biztosan szabad hely lesz -> max_ix
+
+         - A felszaporodó lyukak miatt az ix-ek megváltoznak, a kétirányú hivatkozási rendszer miatt ez a változás egyszerűen végigvezethető az adatokon
+
+    - az adatokat struktúratömbökben kell tartani, biztosítani kell:
+        - egyes elemek elérését - tipikusan a hivatkozási rendszer áltakl tárolt tipus és ix alapján
+        - többes elemek elérését - iteráció az elemeken, megadható feltétellel, és művelettel az igaz és a hamis ágra is
+
+        az ix-ek pointerekre válthatóak, amíg az ix meg nem változik.
+
+    - a táblázatokat lapokra bontva kell kezelni, így feleséegessé válik az allokáció, adminisztrálni kell a lapok foglatságát, az üres lapot lehet felszabadítani
+    - laponként lehet fájlrendszerbe menteni - a sikeres művelet végén a változott lapokat - lapon belül az egyes elemeket -> fp mozgatása??
+    - ha egy lap írása sikertelen, akkor a kiírt lapcsoport maga is sikertelen, ezek eldobásával az előző állapot intakt, és visszaolvasható
+    - minden lap fejlécében meta - ha új mező jön létre, vagy törlődik, akkor a maradék adat jó helyre kerüljön
+        - bináris a formátum, a metaadatok import-exportjával oldható meg az adattagok és adattartalmak megfeleltetése (mivel nincs névegyezés)
+
+        - új mező: régebbinél nincs, ezért üres marad - újabbnál van
+        - módosult mező - fel kell gyűjteni, miről mire módosult, réginél a régi névről az újra, míg újnál simán feltöltődik
+            a verziót követni kell
+        - törölt mező: *******************************************kidolgozni a módszert - törölt mező viszatérése, stb...
+
+a programban kell a változásokat vezetni, az adatfájl tisztán az aktuális állapotot tartalmazza (a lapok), a program dönti el a beolvasás mikéntjét
+
+ha törlünk egymezőt(1), egy darabig nem használjuk(2, 3, 4), majd létrehozunk egy másikat ugyanazon a néven(5) akkor?
+
+
+máshogy kell eljárni az 1, 2-4, és az 5. esetben, a mezők története dönti el, hogyan járunk el a lapon feltalált adatokkal
+
+az 1. és az 5. esetet az külömbözteti meg, hogy a mező már volt egyszer törölve. ugyanazon a néven ugyanazon típussal a mező ugyanaz, vagy másik? eszerint olvassuk be, vgy dobjuk el a feltalált adatot.
+
+A mezőszerkesztőben minden mező látszik, a töröltek is. létrehozhatunk egy korábban törölt mezőt ugyanazon a néven, vagy visszaállíthatjuk a töröltet. ha a törölt listában benne van a mező, akkor:
+ a törlés verziójánál öregebb az adat, akkor dobjuk. ha a létrehozott verziójánál öregebb a lap, dobjuk.
+
+Ha létrehozunk egy verzióban egy mezőt, az onnan kezdve kezd élni. ha találunk öregebbet, nem használjuk fel. ahoz hogy egy régi mező újra éljen, nem elég újra létrehozni, meg is kell öregíteni az eredeti verziójának megfelelően -> régi mező visszaállítása
+
+Ha nem öregítjük vissza, akkor az simán csak egy új mező, és az új verziótól kezd élni. a régebbi adatainkban azt a mezőr veszteni fogjuk.
+
+        minden allokált memória területet adminisztrálni kell, a beállítások és segédadatok táblázata egy elemű tábla, de egységes módon kerül kezelésre minden memóriablokk.
+
+A metaadatok entitásszerkesztővel készülnek - egységesen jól vannak kiszámítva - átjárhatóak C#, VB, C/C++, Python, MsSQL és MySQL számára is
+        a projecttel együtt fejlődik az entitásszerkesztő is
+
+***
+
+Bináris adatállományok feldolgozása -> offset, hossz és típus alapján strukturába -> modell
+
+az entitás maga mint adatmodell, bevihető, CRUD, IO szempontból teljes, ebből kell a típusokat származtatni és ellátni azokkal a tulajdonságokkal ami az egyes típusokra jellemző.
+
+
+az entitás az adattároló réteg által szolgáltatott struktúrák szerkeszthetőségét biztosítja
+
+
+
+A modell relációs adatbázishoz kötődik,
+    - kötődhetne tömbhöz i, a view és a kötődő osztályok maradnak, csak más adatszerkezetből történne a kiszolgálás
+
+1. Meta adatok meghatározása -
+    - adatbázis forrás meghatározása vagy kódból előírni
+    - entitásszerkesztő szerepe->
+    1. az entitás és az entitások közti relációk definiálása
+    2. entitás és az entitások közti relációk leképezése
+        - adatbázis irányba, - a visszaolvasó rész közös kód lehet
+        - program irányba (megfelelő c++ osztályok értékadása beolvasás műveletek nélkül)
+
+2. tábla meta kitöltése
+    - adatbázis felől, vagy programból
+3. mező meta
+    - adatbázisból vagy programból
+
+
+1. leszedni minden táblát ami az adatbázisban van
+2. leszedni a fk-kat -> meta
+3. leszedni a megjegyzést -> meta
+
+entity{
+    name;//torzs_felhasznalo
+    caption;//Felhasználó
+    comment;
+    pk_field_ix; elvileg ez mindíg 1, neve id
+    fields[]
+}
+
+field{
+    name; //nev
+    caption; // Név
+    comment;
+    type; //int, char...
+    validation; //itt egy típustól függő szabályt kell leírni ami a kliens számára ad iránymutatást
+    //numerikus min=1, max=10, def=5, exclude=7,8,9
+    //alfanumerikus -> regex
+    boolean pk
+    //nn
+
+}
+
+
+
+
+PK - Primary Key
+
+NN - Not Null
+
+BIN - Binary (stores data as binary strings. There is no character set so sorting and comparison is based on the numeric values of the bytes in the values.)
+
+UN - Unsigned (non-negative numbers only. so if the range is -500 to 500, instead its 0 - 1000, the range is the same but it starts at 0)
+
+UQ - Create/remove Unique Key
+
+ZF - Zero-Filled (if the length is 5 like INT(5) then every field is filled with 0’s to the 5th value. 12 = 00012, 400 = 00400, etc. )
+
+AI - Auto Increment
+
+
+Többes(Felhasználó) = Felhasználók
+Névelő(Felhasználó) = A vagy Az
+
+szöveg normalizálás
+
+/**/
+readables struktúra:
+    Egy widgethez tartozó megnevezések egy szabványos (en-US) és egy lokalizált nyelven.
+    a mezőből jön a szabványos legalább, és a további lokalizált(ak).
+    ha lokalizált nem áll rendelkezésre, csinálunk egyet.
+
+    - beállításokban választható, hogy lokalizálva vagy eredetiben nézi
+
+    Caption, tooltip
+
+***
+1.
+int zEntity::getEntities(QVector<zSQL *> *zsql, QVector<zEntity *> *zentity)
+kell egy queryexecutor, show tables elhozza atáblaneveket -> entitások
+kiindulópont az, hogy a táblákban a rendszer perzisztens entitástárolói mint táblák, vannak létrehozva
+
+zEntity::getEntities(&zsql, &zentity); az összes adatbázis öszes adattábláját feldolgozza, mint perzisztens távoli entitást
+a helyi entitásokat a c++ kód határozza meg
+ütközés?
+
+
+2.
+http://doc.qt.io/qt-4.8/modelview.html
+2.4 Setting up Headers for Columns and Rows
+
+a tábla fejlécét beállítani - a szerkesztő fejléce az entitás captionja, az oszlopok neve fieldek captionja
+sql esetén a captionok az adatbázis commentekben tárolt propertykből jönnek,
+következés képpen a commentek tartalmaznak egy propertí felsorolást
+amit ki kel regexelni és fel kell dolgozni.
+
+http://json.org/example.html
+{"név": érték}
+
+/*
+Tábla és mező metaadatok
+*/
+
+Tábla:
+{"caption":"Felhasználó"}{"tabs":"Személyes,Rendszer"}
+
+Mező:
+{"caption":"Megnevezés"}
+{"tab":2}
+{"password":false}
+{"default":"nev2"}
+
+{"mask":"99999999-9-99"}
+{"validator":"^[0-9]{8}-[1-5]-(?:[0,2][2-9]|[1,3][0-9]|20|4[0-4]|51)$"}
+
+{"placeholder":"12345678-1-12"}
+{"tooltip":"Az adószám három, egyenként 8, 1, és 2 számjegyből álló, kötőjellel tagolt számcsoportból áll."}{"help":"https://hu.wikipedia.org/wiki/Ad%C3%B3sz%C3%A1m"}
+	http:// vagy https:// : dokumentumot böngészünk, 
+	file:// szövegfájlt hozunk fel
+	egyébként kirakjuk a stringet
+
+regexek: 
+
+Adószám:
+^[0-9]{8}-[1-5]-(?:[0,2][2-9]|[1,3][0-9]|20|4[0-4]|51)$
+
+Először össze kell állítani az entitást, aztán a tábla modell részeit beállítani -
+a tábla oszlopneveit tudhatja az adatbázis alapján, de az alias neveket, captionöket nem fogja tudni honnan beállítani, csak az általunk megadottból. Ezt megadhatjuk az adatbázisban, ahonnan hozzáférhető, illetve
+megadhatjuk a c++ kódban is - jellemzően a két módszer kizárja egymást
+
+Amikor indul a program, összeszedi az entitásait - a meta adatokat
+ha változik közben az adatbázis szerkezete, újra össze kell szednie.
+
+ha meg akarok változtatni egy táblát, a klienseknek addig nem is szabad elérniük amíg változik
+ha egyik sem dolgozik rajta, vagy a program alaphelyzetben van, akkor be kell lockolni,
+klienseken figyelmeztető üzenetet kirakni, majd ha kész, akkor el kell őket engedni, hogy szedjék ösze magukat, azaz
+a megfelelő entitások alaphelyzetbe álljanak. Ezzel előáll egy program indítás utáni állapot.
+
+- A perzisztens távoli entitások frissülnek...
+- lehetnek perzisztens helyi entitások is, ezek fájlokban vannak, és a program verziójával, vagy dll-ekkel frissülnek
+
+/**/
+
+http://stackoverflow.com/questions/25575540/whats-the-best-way-to-have-qtableview-and-database-in-sync-after-inserting-the
+http://doc.qt.io/qt-5/model-view-programming.html
+form editing (with QDataWidgetMapper) instead of direct cell editing
+
+MVF
+http://doc.qt.io/qt-5/model-view-programming.html
+
+Creating Data-Aware Forms
+http://doc.qt.io/qt-4.8/sql-forms.html
+
+
+http://doc.qt.io/qt-5/qitemdelegate.html
+http://doc.qt.io/qt-5/qitemeditorfactory.html#details
+
+/**/
+
+a már bevitt adatok helyben szerkeszthetőek - egy-egy konkrét mező tartalom átírása
+
+    - létrehoz
+        - property sheet -> de hova? - modális dialog, 1 db, pl.
+
+A tábla listában a select bar-on ikon: tableinfo, tableedit, dataedit
+
+1. A táblázat helyén lehetne tab, tableedit, grid/propertysheet
+2. A propertysheet lehet egy modális dialog.
+
+A grid egy szűkített tartalommal is megjelenhet, mivel a propertysheet a teljes tartalmat viszi.
+A szűkítés alapja lehet az azonosító, és a megírás mezők
+
+        - tabok:  táblában felsorolni a tabokat, mezőkben hivatkozni a tabokra
+        - ha rögzíti, létrejön a rekord
+
+    - módosít
+        - létrehozhoz hasonlóan, de az adatok a bezőkból jönnek
+    - töröl
+        - az aktuálisat törli
+
+-visszavonás - ???
+
+Miután sikeres művelet hajtódott végre, esetleg lehetne a többi klienst értesíteni az eseményről / mielőtt relevánssá válik, a kliensek érdeklődnek a szervertől, volt-e művelet.
+- admin mezőtartalmaz előállítjuk a tábla számára, ha a tábla rendelkezik admin mezővel, bejegyezzük
+- admin bejegyzést előállítjuk a naplózás számára, bejegyezzük a naplóba
+
+Workflow monitoring - az utolsó naplóbejegyzés óta volt-e művelet, illetve fut egy ablakban, táblázatos formában, mikor ki mint csinál, illetve eléthetőek az eredmények.
+
+/*
+A modell és a metaadatok összekötése mezőnév alapján történik  - azon elgondolás alapján, melyszerint a modell lekérdezi és kapja az adatbázist valamilyen mezősorrenddel, mi pedig metaadatainkat
+lekérdezzük és kapjuk valamilyen mezősorrenddel. mivel a modell módszere ismeretlen, de legalábbis nem kizárt, hogy nem a mi lekérdezésünk szabályszerűségeit követi -
+a mezőnevek, mint közös pont alapján egyeztetni kell, és a modellbe bejegyezni extra adatként az őt megtestesítő zField entitás beli indexét.
+
+***
+
+Adatbevitel során a mezőkben amikor azok tartalma megváltozik, validálni kell, tudni kell, hogy van-e hibás mező, ez távolabbi fülön is lehet, rögzítre validációs figyelmeztetést kell adni -
+illetve mezőnként is validációs figyelmeztetés kell, a mezőnév mellett figyelmeztető ikon, illetve a figyelmeztetés szövege legyen megjeleníthető kattintással, vagy tooltippel
+
+ha lejövünk amezőről, vagy kellően sokat állunk benne - changed eventnek felel meg?
+
+kitöltéshez - maszk, és minta legyen, pl. taj-szám, telefonszám
+
+a mezőre default érték - ha van, legyen gombbal előhívható (alapból legyen már benne, de ha kitöltéskor felülírja, legyen előhívható)
+a mező, ha lehet null, legyen gomb, amivel elő lehet idézni
+
+/**/
+
+
+*/
+role-ok
+/*
+
+
+jelszót, role-okat titkosítva rakjuk le, a visszafejtés a kliensen történik (eor55)
+
+ha nincs role egy entitásra, mindenkinek mindent lehet
+ha van role meghatározva, a role-val rendelkezőknek lehet azokat a műveleteket végrehajtani, amihez role-juk van
+
+egyszerű usernek ne lehessen tetszőleges role-t adni, körvonalazni kell azoknak a role-oknak a csoportját, ami az egyes felhasználó csoportoknak adhatóak
+csoport-role, egyéni role
+
+az admin role-ok nélkül is láthatja a táblát, de a jelszót még adminként sem láthatja
+
+
+*/
+
+/*
+CREATE TABLE `wiki1`.`torzs_felhasznalo` (
+  `id` INT NOT NULL,
+  `firstname` VARCHAR(45) NOT NULL DEFAULT 'nev1' COMMENT '{\"caption\":\"Vezetéknév\"}{\"tab\":1}',
+  `username` VARCHAR(45) NOT NULL DEFAULT 'user1',
+  `passwd` VARCHAR(45) NOT NULL COMMENT '{\"caption\":\"Jelszó\"}{\"tab\":2}{\"password\":true}',
+  `lastname` VARCHAR(45) NOT NULL COMMENT '{\"caption\":\"Keresztnév\"}{tab:1}',
+  `admin` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+COMMENT = '{\"caption\":\"Felhasznéló\"}{\"tabs\":\"Személyes,Rendszer\"}';
+
+*/
+
+
+Tábla átméretezésnél ha a képenyőre nem fér ki a méret, figyelmeztessen!
+
+
+http://www.diusrex.com/2014/09/qt-modelview-editing-tutorial/
+Qt Model/View Editing Tutorial
+http://doc.qt.io/qt-5/model-view-programming.html
+
+
+QItemDelegate - uses a QItemEditorFactory to create editors
+QItemEditorFactory -provides widgets for editing item data in views and delegates, keeps a collection of
+QItemEditorCreatorBase instances, which are specialized editors for one particular QVariant data type
+
+QAbstractItemDelegate - used to display and edit data items from a model
+
+ auto aw = ui->tableView->itemDelegate(modelIndex);
+ QWidget* editor = aw->createEditor(0, s, modelIndex);
+
+http://www.qtcentre.org/threads/19600-Adding-an-editor-to-the-already-existing-list-of-QItemEditorFactory
+
+class IdentifiersEditor : public QItemEditorFactory
+{
+public:
+  inline IdentifiersEditor() {}
+  QWidget *createEditor(QVariant::Type type, QWidget *parent) const;
+};
+
+QWidget *
+IdentifiersEditor::createEditor(QVariant::Type type, QWidget *parent) const {
+  switch (type) {
+    case QVariant::Color: {
+      ColorListEditor *cb = new ColorListEditor(parent);
+      cb->setFrame(false);
+      return cb;
+    }
+    default:
+      return QItemEditorFactory::createEditor(type, parent);
+      break;
+  }
+  return 0;
+}
+
+belső böngésző a help és egyéb webes infok böngészéséhez - így kézbentarthetó, milyen url-eket tartunk nyitva, megelőzhetjük az újranyitást, invokálhatunk frissítést
+
+/*
+készítsünk modelt az inmemory osztályokhoz!
+*/
+http://doc.qt.io/qt-5/qtwidgets-itemviews-simpletreemodel-example.html
+
+/*
+create - új adat mellé új adminNode
+régi adminstring - régi adat update vagy delete
+a kliensnek kell rögzítenie, milyen adatokat milyen körülmények közt láttak
+*/
+

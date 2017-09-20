@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ic_help_black_18px.svg</file>
+        <file>ic_settings_backup_restore_black_18px.svg</file>
+        <file>ic_delete_black_18px.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,32 @@
+1. Az entitás jöhet
+
+    db: adott szerver adott adatbázisának adott táblája - ez entitásonként eltérő lehet
+            az entitás meta adatai az adatbázis szerkezeteéből származnak
+    file:
+        - text
+        - bináris
+
+            az entitás meta adatai a forráskódban kerülnek definiálásra
+
+
+
+
+SELECT table_comment
+FROM INFORMATION_SCHEMA.TABLES
+WHERE table_schema='wiki1' and table_name='torzs_felhasznalo';
+
+EntityProps struktúra -
+statikus getEntityProps(String ebből); // EntityProps strukturával tér vissza
+
+és ugyanez Fieldre szintén
+
+SELECT
+    COLUMN_COMMENT
+FROM
+    INFORMATION_SCHEMA.COLUMNS
+WHERE
+    TABLE_SCHEMA = 'db-name' AND
+    TABLE_NAME = 'table-name' AND
+    COLUMN_NAME = 'column-name'
+
+
