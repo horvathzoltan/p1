@@ -190,11 +190,13 @@ void masterDataForm::CreateUpdate(int ix_r)
 
 
 bool masterDataForm::setFieldByName(QString s, QVariant v, int ix_r){   
+     qDebug() << "setFieldByName";
     int f_ix = model->fieldIndex(s);
     if (f_ix != -1) return model->setData(model->index(ix_r, f_ix, QModelIndex()), v); else return false;
 }
 
 QVariant masterDataForm::getFieldByName(QString s, int ix_r){
+    qDebug() << "getFieldByName";
     int ix_c = model->fieldIndex(s);
     if (ix_c != -1) return model->index(ix_r, ix_c).data(); else return QVariant();
 }

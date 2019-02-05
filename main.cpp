@@ -12,7 +12,7 @@
 #include "ui_mainwindow.h"
 
 #include "masterdataform.h"
-#include "frame1.h"
+//#include "frame1.h"
 
 //http://doc.qt.io/qt-5/modelview.html
 
