@@ -145,7 +145,7 @@ CREATE TABLE `torzs_felhasznalo` (
 
     //távoli perzisztens entitások a MasterData struktúrába
     zEntity::getEntities(&(md.zsql), &(md.zentity));
-
+//t1
     //helyi entitások hozzáadása a MasterData struktúrába
      QMap<QString, QString> propertyMap_entity1 {{"caption","UserDataX"},{"tabs","Personal,System"}};
      zEntity *entity1 = new zEntity{nullptr, QStringLiteral("teszt1"), propertyMap_entity1};
