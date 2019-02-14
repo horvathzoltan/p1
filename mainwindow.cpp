@@ -52,23 +52,25 @@ void MainWindow::on_MasterDataEditorAction_triggered()
  * if(userHasRole("MDE"))//MasterDataEditor
 */
 
-    if(w != nullptr){
-        delete w;
-    }
 
-     //Z_DEBUG("break1");
+     delete w;
 
-     masterDataForm *w = new masterDataForm();
+     auto *w = new masterDataForm();
      QList<zListItem> sl1;
 
-     for(int i=0;i<md.zentity.length();i++){
+     for(int i=0;i<md.zentity.length();i++)
+     {
          zEntity* e = md.zentity[i];
 
-          if(e!=nullptr)
-              sl1.append({e->caption, i});
-          else
-              qDebug() <<"NULL";
-          };
+         if(e!=nullptr)
+         {
+             sl1.append({e->caption, i});
+         }
+         else
+         {
+             qDebug() <<"NULL";
+         }
+     };
 
 
      w->setEntityList(&sl1);

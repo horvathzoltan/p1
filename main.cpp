@@ -147,18 +147,18 @@ CREATE TABLE `torzs_felhasznalo` (
     zEntity::getEntities(&(md.zsql), &(md.zentity));
 
     //helyi entitások hozzáadása a MasterData struktúrába
-     QMap<QString, QString> propertyMap_entity1 {{"caption","UserData"},{"tabs","Personal,System"}};
-     zEntity *entity1 = new zEntity{nullptr, "", &propertyMap_entity1};
+     QMap<QString, QString> propertyMap_entity1 {{"caption","UserDataX"},{"tabs","Personal,System"}};
+     zEntity *entity1 = new zEntity{nullptr, QStringLiteral("teszt1"), propertyMap_entity1};
 
      QMap<QString, QString> propertyMap_field1 {{"caption","Forename"},{"tab","1"}};
-     zField *field1 = new zField {"name1", "varchar 32", &propertyMap_field1, QVariant("name1"), true};
+     zField *field1 = new zField {QStringLiteral("name1"), QStringLiteral("varchar 32"), &propertyMap_field1, QVariant("name1"), true};
      QMap<QString, QString> propertyMap_field2 {{"caption","Surname"},{"tab","1"}};
-     zField *field2 = new zField {"name2", "varchar 32", &propertyMap_field2, QVariant("name2"), true};
+     zField *field2 = new zField {QStringLiteral("name2"), QStringLiteral("varchar 32"), &propertyMap_field2, QVariant("name2"), true};
 
      QMap<QString, QString> propertyMap_field3 {{"caption","User"},{"tab","2"}};
-     zField *field3 = new zField {"name1", "varchar 32", &propertyMap_field3, QVariant("usr"), true};
+     zField *field3 = new zField {QStringLiteral("name1"), QStringLiteral("varchar 32"), &propertyMap_field3, QVariant("usr"), true};
      QMap<QString, QString> propertyMap_field4 {{"caption","Password"},{"tab","2"}};
-     zField *field4 = new zField {"name2", "varchar 32", &propertyMap_field4, QVariant("pass"), true};
+     zField *field4 = new zField {QStringLiteral("name2"), QStringLiteral("varchar 32"), &propertyMap_field4, QVariant("pass"), true};
 //{"admin":["c|anonymous|20170305T120313Z|c80d6e89-f1fc-491d-b0d3-56edffae0e3d","u|anonymous|20170306T120313Z|c80d6e89-f1fc-491d-b0d3-56edffae0e3e"]}
     entity1->fieldList.append(field1);
     entity1->fieldList.append(field2);

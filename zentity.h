@@ -7,10 +7,11 @@
 
 struct zEntity //: public QSqlDatabase
 {
-public:
+public:    
   zSQL* zsql;// ha null, akkor inmemory
   QString tablanev;
-
+//sql_conn="" sql_schema="" sql_table="torzs_partner"
+//sql_updateTimeStamp
   QSqlRelationalTableModel* getModel();
   //QString name;//torzs_felhasznalo
   QString caption;//Felhasználó
@@ -27,7 +28,7 @@ public:
 
   zEntity (zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList );
   zEntity (zSQL* _zsql, QString _tablanev);
-  zEntity (zSQL* _zsql, QString _tablanev, QMap<QString, QString> *_props);
+  zEntity (zSQL* _zsql, QString _tablanev, const QMap<QString, QString>& _props);
 
   ~zEntity(void);
   int getFields();

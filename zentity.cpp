@@ -72,7 +72,7 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev){
 
 
 
-zEntity::zEntity (zSQL* _zsql, QString _tablanev, QMap<QString, QString> *_props){
+zEntity::zEntity (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_props){
     zsql = _zsql;
     tablanev = _tablanev;
 
@@ -82,20 +82,22 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev, QMap<QString, QString> *_props
 
     comment = nullptr;
 
-    if(_props){             
-        if(!zProperty::getFromMap(_props, "caption", &caption))
+    auto zzz = const_cast<QMap<QString, QString>*>(&_props);
+
+    //if(_props){
+    if(!zProperty::getFromMap(zzz, "caption", &caption))
             err << this->toString();
 
-        if(!zProperty::getFromMap(_props, "_digest_", &comment))
+        if(!zProperty::getFromMap(zzz, "_digest_", &comment))
             err << this->toString();
 
         QString tabs;
-        if(zProperty::getFromMap(_props, "tabs", &tabs))
+        if(zProperty::getFromMap(zzz, "tabs", &tabs))
            tabList = tabs.split(',',QString::SplitBehavior::SkipEmptyParts);
         else
             err << this->toString();
 
-    }
+    //}
     fieldList = {};
 
     if(caption.isEmpty()){
@@ -318,7 +320,7 @@ int zEntity::getEntities(QVector<zSQL*> *zsql, QVector<zEntity*>* zentityList)
 
                 //QVector<zField*> fieldList;
 
-                zEntity* entity = new zEntity(a, tablanev, &propertyMap);
+                zEntity* entity = new zEntity(a, tablanev, propertyMap);
 
                 if(entity != nullptr){
                     zentityList->append(entity);
