@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource1.qrc">
+    <normaloff>:/maindata-48x48.png</normaloff>:/maindata-48x48.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
@@ -32,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>613</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHell_User">
@@ -71,6 +75,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resource1.qrc"/>
+ </resources>
  <connections/>
 </ui>

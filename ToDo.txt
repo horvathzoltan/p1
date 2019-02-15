@@ -1,5 +1,5 @@
 
-1. induláskor user, role - API tömörítve binárisan kommunikál - megkapja azokat az API hívásokat amihez van role-ja, és úgy épülnek be a menübe, mint mármely helyi funkció
+1. induláskor user, role - API tömörítve binárisan kommunikál - megkapja azokat az API hívásokat amihez van role-ja, és úgy épülnek be a menübe, mint bármely helyi funkció
 2. menüt kirak, minden modul a saját menüjével beépül
     - menü-> művelet időbélyeg, guid
     - ha van fent újabb a megvalósító dll-ből, le kell szedni
