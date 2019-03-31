@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QAbstractButton>
-#include "zentity.h"
+#include "ztable.h"
 #include "zlistitem.h"
 #include "ui_propertysheet.h"
 
@@ -44,7 +44,7 @@ public:
 
 struct PropertySheetData{
 public:
-    zEntity* entity;
+    zTable* entity;
     QSqlRelationalTableModel* model;
     QList<zControlTab> tabList;
     int ix_r;

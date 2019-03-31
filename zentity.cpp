@@ -13,28 +13,28 @@
 #include <QSqlDriver>
 
 
-#include "zentity.h"
+#include "ztable.h"
 #include "zexception.h"
 #include "zproperty.h"
 #include "zstringhelper.h"
 #include "zglobal.h"
 #include "globals.h"
 
-QSqlRelationalTableModel* zEntity::getModel(){
+QSqlRelationalTableModel* zTable::getModel(){
     if(!this->zsql) return nullptr;
     qDebug() << "getModel: " << this->zsql->connectionName;// << ':' << this->tablanev;
 
     QSqlRelationalTableModel *model = new QSqlRelationalTableModel(NULL, this->zsql->db);
 
-    model->setTable(this->tablanev);
+    model->setTable(this->sql_table);
     //model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
 
-    if(fieldList.length()>0){
+    if(rows.length()>0){
         auto columnCount = model->columnCount();
         for(int i=0;i<columnCount;i++){
-            for(int j =0;j<fieldList.length();j++){
-                zField *f  = fieldList[j];
+            for(int j =0;j<rows.length();j++){
+                zField *f  = rows[j];
                 if(f->name == model->headerData(i, Qt::Horizontal)){
                     model->setHeaderData(i, Qt::Horizontal, j, FieldIxRole);
                     model->setHeaderData(i, Qt::Horizontal, f->caption);
@@ -46,13 +46,13 @@ QSqlRelationalTableModel* zEntity::getModel(){
     return model;
 }
 
-zEntity::zEntity ( zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList ){
+zTable::zTable ( zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList ){
     zsql = _zsql;
-    tablanev = _tablanev;
+    sql_table = _tablanev;
     //name = _name;
     caption = _caption;
     comment = _comment;
-    fieldList = _fieldList;
+    rows = _fieldList;
 
 #ifdef QT_DEBUG
     Z_DEBUG(this->toString());
@@ -72,9 +72,9 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev){
 
 
 
-zEntity::zEntity (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_props){
+zTable::zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_props){
     zsql = _zsql;
-    tablanev = _tablanev;
+    sql_table = _tablanev;
 
     QStringList err;
 
@@ -98,7 +98,7 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &
             err << this->toString();
 
     //}
-    fieldList = {};
+    rows = {};
 
     if(caption.isEmpty()){
         caption = _tablanev;
@@ -111,17 +111,17 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &
 }
 
 
-zEntity::~zEntity(void){
+zTable::~zTable(void){
     qDebug("~zEntity(void)");
-    if(!((this->tablanev.isEmpty()) || (this->zsql == nullptr))) {
-        qDeleteAll(this->fieldList);
-        this->fieldList.clear();
-        this->fieldList.squeeze();
+    if(!((this->sql_table.isEmpty()) || (this->zsql == nullptr))) {
+        qDeleteAll(this->rows);
+        this->rows.clear();
+        this->rows.squeeze();
     }
 }
 
-QString zEntity::toString(){
-    return this->tablanev+"("+this->caption+")";
+QString zTable::toString(){
+    return this->sql_table+"("+this->caption+")";
 }
 
 //QString zEntity::toString(zEntity *z)
@@ -188,15 +188,15 @@ int zEntity::getEntities(QVector<zSQL*> *zsql, QVector<zEntity*>* zentityList)
 }
 */
 
-int zEntity::getFields(void){
-    if(this->fieldList.size()>0)
+int zTable::getFields(void){
+    if(this->rows.size()>0)
         qDebug() << this->toString()+": már vannak mezői"; // the entity already has fields
 
     int fieldcount = 0;
 
     //this->zsql->doQuery(&fieldcount, &zEntity::rowToFieldList, "SHOW columns FROM "+this->tablanev, &this->fieldList, NULL);
 
-    QSqlQuery query("DESCRIBE "+this->tablanev, this->zsql->db);
+    QSqlQuery query("DESCRIBE "+this->sql_table, this->zsql->db);
 
     if(query.exec()){
         while (query.next()) {
@@ -211,18 +211,18 @@ int zEntity::getFields(void){
             QSqlQuery query2("SELECT column_comment, column_default "
                              "FROM INFORMATION_SCHEMA.COLUMNS "
                              "WHERE table_schema='"+this->zsql->databaseName+"' "
-                               "and table_name='"+this->tablanev+"' "
+                               "and table_name='"+this->sql_table+"' "
                                "and COLUMN_NAME = '"+fieldName+"';", this->zsql->db);
             query2.setForwardOnly(true);
             query2.next();
 
-            auto propertyMap = zEntity::getEntityProperties(query2.value(0).toString());
+            auto propertyMap = zTable::getEntityProperties(query2.value(0).toString());
 
             //http://stackoverflow.com/questions/18829018/qt-sql-get-column-type-and-name-from-table-without-record
 
             auto field = new zField(fieldName, fieldTypeAndSize, &propertyMap, query2.value(1), zStringHelper::toBool(query.value(2).toString()));
             if(field != nullptr){
-                this->fieldList.append(field);
+                this->rows.append(field);
                 fieldcount++;
                 }
             }
@@ -288,7 +288,7 @@ fetch the number of fields with record.count() and the name and type with record
 //    return fieldcount;
 //}
 
-int zEntity::getEntities(QVector<zSQL*> *zsql, QVector<zEntity*>* zentityList)
+int zTable::getEntities(QVector<zSQL*> *zsql, QVector<zTable*>* zentityList)
 {
     int entitycount2 = 0;
 
@@ -316,11 +316,11 @@ int zEntity::getEntities(QVector<zSQL*> *zsql, QVector<zEntity*>* zentityList)
 
 
 
-                auto propertyMap = zEntity::getEntityProperties(query2.value(0).toString());
+                auto propertyMap = zTable::getEntityProperties(query2.value(0).toString());
 
                 //QVector<zField*> fieldList;
 
-                zEntity* entity = new zEntity(a, tablanev, propertyMap);
+                zTable* entity = new zTable(a, tablanev, propertyMap);
 
                 if(entity != nullptr){
                     zentityList->append(entity);
@@ -346,7 +346,7 @@ int zEntity::getEntities(QVector<zSQL*> *zsql, QVector<zEntity*>* zentityList)
 // https://regex101.com
 
 
-QMap<QString, QString> zEntity::getEntityProperties(QString entityProps) {
+QMap<QString, QString> zTable::getEntityProperties(QString entityProps) {
     // QMap<QString, QVariant> pm, pm2;
     QMap<QString, QString> pm;
 
@@ -392,7 +392,7 @@ QMap<QString, QString> zEntity::getEntityProperties(QString entityProps) {
 }
 
 
-QMap<QString, QVariant> zEntity::getEntityPropertiesJson(QString entityProps)
+QMap<QString, QVariant> zTable::getEntityPropertiesJson(QString entityProps)
 {
     QVariantMap pm;
 
@@ -420,8 +420,8 @@ QMap<QString, QVariant> zEntity::getEntityPropertiesJson(QString entityProps)
    return pm;
 }
 
-zField* zEntity::getFieldByName(QString s){    
-    zforeach(f, this->fieldList){ if(QString::compare((*f)->name, s, Qt::CaseInsensitive)==0) return (*f); }
+zField* zTable::getFieldByName(QString s){    
+    zforeach(f, this->rows){ if(QString::compare((*f)->name, s, Qt::CaseInsensitive)==0) return (*f); }
     return NULL;
 }
 

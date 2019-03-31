@@ -51,7 +51,7 @@ void masterDataForm::setEntityList(QList<zListItem> *ptr)
 //}
 
 void masterDataForm::tableChanged(){
-    zEntity *entity = md.zentity[zentity_ix];
+    zTable *entity = md.zentity[zentity_ix];
 
    // qDebug() << "EntityTypeSelected" << "name=" +item->text() <<" index=" << zentity_ix;
 
@@ -68,7 +68,7 @@ void masterDataForm::tableChanged(){
         for(int i = 0;i<model->columnCount();i++){
             int field_ix = model->headerData(i, Qt::Horizontal, FieldIxRole).toInt();
 
-            zField *f = entity->fieldList[field_ix];
+            zField *f = entity->rows[field_ix];
 
             if(f->name == "id" || f->name=="admin" || f->name=="active" || f->name=="inactive"){
                 ui->tableView->setItemDelegateForColumn(i, &ned);
@@ -143,7 +143,7 @@ void masterDataForm::CreateUpdate(int ix_r)
 
     //zOperation *op = new zOperation(isCreate ? zOperation::c : zOperation::u, &md.user);
 
-    zEntity *e = md.zentity[zentity_ix];
+    zTable *e = md.zentity[zentity_ix];
     psd.entity = e;
 
     qDebug() <<"CreateUpdate:"<< (isCreate ? "Create ": "Update ") <<  e->toString();
@@ -161,7 +161,7 @@ void masterDataForm::CreateUpdate(int ix_r)
         psd.tabList.append({"_", QList<zControl> {} });
 
     //Q_FOREACH(auto f, e->fieldList){
-    zforeach(f, e->fieldList){
+    zforeach(f, e->rows){
         int ix_c = -1;
 
         if(model)

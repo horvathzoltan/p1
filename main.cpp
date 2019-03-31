@@ -39,11 +39,11 @@ int main(int argc, char *argv[])
     md.zsql[md.SQL_SERVER_1] = new zSQL {"QMYSQL", "127.0.0.1", "wiki1", "root", "Aladar123", "aw1"};
     md.zsql[md.SQL_SERVER_2] = new zSQL {"QMYSQL", "127.0.0.1", "wiki2", "root", "Aladar123", "aw2"};
     //távoli perzisztens entitások a MasterData struktúrába
-    zEntity::getEntities(&(md.zsql), &(md.zentity));
+    zTable::getEntities(&(md.zsql), &(md.zentity));
 
     //helyi entitások hozzáadása a MasterData struktúrába
     QMap<QString, QString> propertyMap_entity1 {{"caption","UserDataX"},{"tabs","Personal,System"}};
-    zEntity *entity1 = new zEntity{nullptr, QStringLiteral("teszt1"), propertyMap_entity1};
+    zTable *entity1 = new zTable{nullptr, QStringLiteral("teszt1"), propertyMap_entity1};
     QMap<QString, QString> propertyMap_field1 {{"caption","Forename"},{"tab","1"}};
     zField *field1 = new zField {QStringLiteral("name1"), QStringLiteral("varchar 32"), &propertyMap_field1, QVariant("name1"), true};
     QMap<QString, QString> propertyMap_field2 {{"caption","Surname"},{"tab","1"}};
@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
     QMap<QString, QString> propertyMap_field4 {{"caption","Password"},{"tab","2"}};
     zField *field4 = new zField {QStringLiteral("name2"), QStringLiteral("varchar 32"), &propertyMap_field4, QVariant("pass"), true};
 //{"admin":["c|anonymous|20170305T120313Z|c80d6e89-f1fc-491d-b0d3-56edffae0e3d","u|anonymous|20170306T120313Z|c80d6e89-f1fc-491d-b0d3-56edffae0e3e"]}    
-    entity1->fieldList.append(field1);
-    entity1->fieldList.append(field2);
-    entity1->fieldList.append(field3);
-    entity1->fieldList.append(field4);
+    entity1->rows.append(field1);
+    entity1->rows.append(field2);
+    entity1->rows.append(field3);
+    entity1->rows.append(field4);
     md.zentity.append(entity1);
 
     //TODO zEntity->zTable

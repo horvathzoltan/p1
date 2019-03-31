@@ -60,7 +60,7 @@ void MainWindow::on_MasterDataEditorAction_triggered()
 
      for(int i=0;i<md.zentity.length();i++)
      {
-         zEntity* e = md.zentity[i];
+         zTable* e = md.zentity[i];
 
          if(e!=nullptr)
          {

@@ -38,7 +38,6 @@ SOURCES += main.cpp \
 
 HEADERS  += \
     zAbstractModel.h \
-    zentity.h \
     zsql.h \
     zfield.h \
     zvalidation.h \
@@ -59,7 +58,8 @@ HEADERS  += \
     helpform.h \
     zoperation.h \
     zadminnode.h \
-    zuser.h
+    zuser.h \
+    ztable.h
 
 FORMS    += mainwindow.ui \
     propertysheet.ui \

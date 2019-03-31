@@ -1,7 +1,7 @@
 #ifndef ZMAIN_H
 #define ZMAIN_H
 
-#include "zentity.h"
+#include "ztable.h"
 #include "zalgorithms.h"
 #include "zoperation.h"
 #include <qstring.h>
@@ -17,7 +17,7 @@ class MasterData{
 
     QVector<zSQL*> zsql = QVector<zSQL*>(SQL_SERVER_MAX);
 
-    QVector<zEntity*> zentity;
+    QVector<zTable*> zentity;
 
     MasterData(QString _mainName);
     ~MasterData(void);

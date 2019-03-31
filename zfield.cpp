@@ -5,7 +5,7 @@
 
 #include "zfield.h"
 #include "zexception.h"
-#include "zentity.h"
+#include "ztable.h"
 #include "zproperty.h"
 #include "ztipus.h"
 /*

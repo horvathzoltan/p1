@@ -5,7 +5,7 @@
 #include <QListWidget>
 #include <QSignalMapper>
 #include <QWidget>
-#include "zentity.h"
+#include "ztable.h"
 #include "zlistitem.h"
 #include <QItemDelegate>
 
