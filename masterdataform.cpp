@@ -13,6 +13,7 @@
 #include <QLabel>
 
 #include "globals.h"
+#include "zmacro.h"
 #include "zadminnode.h"
 
 masterDataForm::masterDataForm(QWidget *parent) : QWidget(parent)

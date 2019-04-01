@@ -18,7 +18,6 @@ TEMPLATE = app
 SOURCES += main.cpp \
     zAbstractModel.cpp \
     zsql.cpp \
-    zentity.cpp \
     zfield.cpp \
     ztipus.cpp \
     mainwindow.cpp \
@@ -34,7 +33,9 @@ SOURCES += main.cpp \
     zoperation.cpp \
     zadminnode.cpp \
     masterdata.cpp \
-    zuser.cpp
+    zuser.cpp \
+    ztable.cpp \
+    zlogicexception.cpp
 
 HEADERS  += \
     zAbstractModel.h \
@@ -59,7 +60,9 @@ HEADERS  += \
     zoperation.h \
     zadminnode.h \
     zuser.h \
-    ztable.h
+    ztable.h \
+    zmacro.h \
+    zlogicexception.h
 
 FORMS    += mainwindow.ui \
     propertysheet.ui \

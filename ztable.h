@@ -4,11 +4,14 @@
 #include <QtSql/QSqlRelationalTableModel>
 #include "zsql.h"
 #include <QDateTime>
+#include <QXmlStreamWriter>
 //#include "zfield.h"
 
 struct zTable //: public QSqlDatabase
 {
 public:
+  static const QString PKNAME;
+
   zSQL* zsql;// ha null, akkor inmemory
   // TODO name - megnevezés - a tábla egyedi azionosítója
   QString name;     // megnevezés - a tábla egyedi azonosítója
@@ -81,7 +84,7 @@ public:
   int getFields();
   //int getFields_old();
 
-  QString toString();
+  QString toString() const;
   static QString toString(zTable *z);
 
   static int getEntities(QVector<zSQL*>*, QVector<zTable*>*);
@@ -98,6 +101,14 @@ public:
   void getStringIn(QString v);
 
   zField* getFieldByName(QString s);
+
+
+  //void saveTablaToXML();
+  void toXML(QXmlStreamWriter*);
+  //static zTable fromXML(QXmlStreamReader* xml);
+
+  QString pkname() const;
+  bool hasPkname() const;
 };
 
 /*

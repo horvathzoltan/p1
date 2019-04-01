@@ -33,8 +33,9 @@ int main(int argc, char *argv[])
 
     mainWindow.setWindowTitle(md.mainName);
 
-
     mainWindow.show();
+
+    //
 
     md.zsql[md.SQL_SERVER_1] = new zSQL {"QMYSQL", "127.0.0.1", "wiki1", "root", "Aladar123", "aw1"};
     md.zsql[md.SQL_SERVER_2] = new zSQL {"QMYSQL", "127.0.0.1", "wiki2", "root", "Aladar123", "aw2"};
@@ -42,6 +43,16 @@ int main(int argc, char *argv[])
     zTable::getEntities(&(md.zsql), &(md.zentity));
 
     //helyi entitások hozzáadása a MasterData struktúrába
+    // TODO entitás mától kezdve ztable
+    // teszt1, alább kódból
+    // wiki1: torzs_felhasznalo, torzs_partner, torzs_szerepkor
+    // wiki2: torzs_csiga
+
+    // kiírni xml-be a jelenleg rendelkezésre álló metát
+    // beolvasni az xml-t
+    // validálni az sql kapcsolatot
+    // validálni a doksit, amennyiben rendelkezésre áll
+
     QMap<QString, QString> propertyMap_entity1 {{"caption","UserDataX"},{"tabs","Personal,System"}};
     zTable *entity1 = new zTable{nullptr, QStringLiteral("teszt1"), propertyMap_entity1};
     QMap<QString, QString> propertyMap_field1 {{"caption","Forename"},{"tab","1"}};
@@ -69,7 +80,7 @@ int main(int argc, char *argv[])
     //- megváltoztatható/megváltozó adattáblák sql metaadattábla által felvehetőek a rendszerbe
     //TODO md.sql - ztables lista-> sql kapcsolatok feltárása
     //TODO - sql változott-e - tábla, mezők
-    return QApplication::exec();
+    return QApplication::exec();    
 }
 
 

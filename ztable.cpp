@@ -17,8 +17,11 @@
 #include "zexception.h"
 #include "zproperty.h"
 #include "zstringhelper.h"
+#include "zmacro.h"
 #include "zglobal.h"
 #include "globals.h"
+
+const QString zTable::PKNAME = QStringLiteral("pkname");
 
 QSqlRelationalTableModel* zTable::getModel(){
     if(!this->zsql) return nullptr;
@@ -106,7 +109,9 @@ zTable::zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_p
     }
 
 #ifdef QT_DEBUG
-    Z_DEBUG(this->toString() + (err.length()>0 ? " warn:"+err.join(",") : " ok"));
+    auto m1 = this->toString();
+    auto m2 = (err.length()>0 ? " warn:"+err.join(",") : " ok");
+    Z_DEBUG(m1 + m2);
 #endif
 }
 
@@ -120,8 +125,25 @@ zTable::~zTable(void){
     }
 }
 
-QString zTable::toString(){
+QString zTable::toString() const
+{
     return this->sql_table+"("+this->caption+")";
+    /*
+    QString rs = zStringHelper::Empty;
+    QString ps;
+    zforeach(r, this->rows){
+        if(!rs.isEmpty())
+        {
+            rs += ',';
+        }
+        /*
+        if(r->name==this->pkname())
+        {
+            rs += QStringLiteral("PK:");
+        }
+        rs+=r->toString();
+    }
+    */
 }
 
 //QString zEntity::toString(zEntity *z)
@@ -425,5 +447,126 @@ zField* zTable::getFieldByName(QString s){
     return NULL;
 }
 
+void zTable::toXML(QXmlStreamWriter *s)
+{
+
+    s->writeStartElement(nameof(zTable));
+    //s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
+    s->writeAttribute(nameof(this->name), this->name);
+
+    s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
+    s->writeAttribute(nameof(this->sql_schema), this->sql_schema);
+    s->writeAttribute(nameof(this->sql_table), this->sql_table);
+    s->writeAttribute(nameof(this->sql_updateTimeStamp), this->sql_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->sql_isValid), zStringHelper::boolToString(this->sql_isValid));
+
+    s->writeAttribute(nameof(this->class_path), this->class_path);
+    s->writeAttribute(nameof(this->class_name), this->class_name);
+    s->writeAttribute(nameof(this->class_name_plural), this->class_name_plural);
+    s->writeAttribute(nameof(this->source_updateTimeStamp), this->source_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->source_isValid), zStringHelper::boolToString(this->source_isValid));
+
+    s->writeAttribute(nameof(this->docName), this->docName);
+    s->writeAttribute(nameof(this->document_path), this->document_path);
+    s->writeAttribute(nameof(this->document_updateTimeStamp), this->document_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
+
+    s->writeAttribute(nameof(this->comment), this->comment);
+
+    s->writeAttribute(PKNAME, this->pkname());
+    s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
+    s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
+
+    s->writeStartElement(nameof(this->rows));
+    // TODO row.toxml implementáció
+    //zforeach(r, this->rows){ (*r).toXML(s); }
+    s->writeEndElement();
+
+    s->writeEndElement();
+}
+
+QString zTable::pkname() const
+{
+    if(hasPkname())
+    {
+        return this->rows[this->pkrowix]->name;//.colName;
+    }
+
+    return zStringHelper::Empty;
+}
+
+bool zTable::hasPkname() const
+{
+    return this->pkrowix>-1;
+}
+
+
+/*
+zTable zTable::fromXML(QXmlStreamReader* xml){
+    zTable t;
+
+    auto a = xml->attributes();
+
+    zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
+
+    zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
+    zXmlHelper::putXmlAttr(a, nameof(sql_schema), &(t.sql_schema));
+    zXmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
+    zXmlHelper::putXmlAttr(a, nameof(sql_isValid), &(t.sql_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(sql_updateTimeStamp), &(t.sql_updateTimeStamp));
+
+    zXmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
+    zXmlHelper::putXmlAttr(a, nameof(class_name), &(t.class_name));
+    zXmlHelper::putXmlAttr(a, nameof(class_name_plural), &(t.class_name_plural));
+    zXmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
+
+    zXmlHelper::putXmlAttr(a, nameof(docName), &(t.docName));
+    zXmlHelper::putXmlAttr(a, nameof(document_path), &(t.document_path));
+    zXmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
+
+    zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
+    QString pkname;
+    zXmlHelper::putXmlAttr(a, PKNAME, &(pkname));
+    zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
+    zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+
+
+    zXmlHelper::putXmlAttr(a, QStringLiteral("tablename"), &(t.sql_table));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("classname"), &(t.class_name));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("classname_plural"), &(t.class_name_plural));
+
+
+    if (xml->readNextStartElement() && xml->name() == "rows")
+    {
+        t.rows = QList<zTablerow>();
+
+        while(xml->readNextStartElement())
+        {
+            if(xml->name()==nameof(zTablerow))
+            {
+                auto r = zTablerow::fromXML(xml);
+                t.rows.append(r);
+                //QString txt =
+                xml->readElementText();
+            }
+            else
+            {
+                xml->skipCurrentElement();
+            }
+
+        }
+        xml->readNextStartElement();
+    }
+
+    t.pkrowix = zTablerow::findIx(t.rows, pkname);
+
+    //t.props = QList<zTablerow>();
+    //tl.append(t);
+    //zlog.log("XML beolvasva: "+ t.name +xml->errorString());
+    return t;
+}
+*/
 
 

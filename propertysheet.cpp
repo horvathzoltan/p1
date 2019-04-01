@@ -21,6 +21,7 @@
 #include "zspinbox.h"
 //#include "zitemeditorfactory.h"
 #include "globals.h"
+#include "zmacro.h"
 #include "zadminnode.h"
 
 //PropertySheet::PropertySheet(QSqlRelationalTableModel* model, int ix_r, QWidget *parent, QList<zControlTab> tablist, QString windowTitle) :

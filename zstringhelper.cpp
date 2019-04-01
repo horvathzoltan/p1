@@ -1,6 +1,9 @@
 #include "zstringhelper.h"
-#include <QString>
+#include <QStringList>
 
+const QString zStringHelper::Empty = QString();
+const QStringList zStringHelper::TrueStr = {QStringLiteral("true"), QStringLiteral("yes"), QStringLiteral("ok"), QStringLiteral("1")};
+const QStringList zStringHelper::FalseStr = {QStringLiteral("false"), QStringLiteral("no"), QStringLiteral("nok"), QStringLiteral("0")};
 
 QString zStringHelper::getInner1(QString *v){
 /*    int ix1 = v->indexOf(a);
@@ -33,4 +36,13 @@ bool zStringHelper::toBool(QString ezt){
        return true;
    else
        return false;
+}
+
+QString zStringHelper::boolToString(bool a)
+{
+    if(a)
+    {
+        return TrueStr.first();
+    }
+    return FalseStr.first();
 }
