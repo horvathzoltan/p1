@@ -24,7 +24,7 @@ SOURCES += main.cpp \
     zproperty.cpp \
     masterdataform.cpp \
     propertysheet.cpp \
-    zstringhelper.cpp \
+    #zstringhelper.cpp \
     zexception.cpp \
     zspinbox.cpp \
     zitemeditorfactory.cpp \
@@ -35,7 +35,7 @@ SOURCES += main.cpp \
     masterdata.cpp \
     zuser.cpp \
     ztable.cpp \
-    zlogicexception.cpp
+    #zlogicexception.cpp
 
 HEADERS  += \
     zAbstractModel.h \
@@ -50,7 +50,7 @@ HEADERS  += \
     zlistitem.h \
     masterdataform.h \
     propertysheet.h \
-    zstringhelper.h \
+    #zstringhelper.h \
     zglobal.h \
     zalgorithms.h \
     zspinbox.h \
@@ -61,8 +61,8 @@ HEADERS  += \
     zadminnode.h \
     zuser.h \
     ztable.h \
-    zmacro.h \
-    zlogicexception.h
+    #zmacro.h \
+    #zlogicexception.h
 
 FORMS    += mainwindow.ui \
     propertysheet.ui \
@@ -73,11 +73,32 @@ DISTFILES += \
     ToDo.txt \
     Entity.txt
 
+HOME = $$system(echo $HOME)
+COMMON_LIBS = commonlib
 
 LIBS += -L$$PWD/../../mysql/lib/ -lmysqlcppconn
 
 INCLUDEPATH += $$PWD/../../mysql/include
 DEPENDPATH += $$PWD/../../mysql/include
+
+#unix:!macx: LIBS += -L/home/zoli/build-common-Desktop_Qt_5_12_2_GCC_64bit2-Debug/stringhelper/ -lstringhelper
+unix:!macx:
+{
+    #LIBS += -L/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/stringhelper/ -lstringhelper
+    #LIBS += -L/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/macrofactory/ -lmacrofactory
+    LIBS += -L/$$HOME/$$COMMON_LIBS -lstringhelper
+    LIBS += -L/$$HOME/$$COMMON_LIBS/ -lmacrofactory
+}
+
+QMAKE_LFLAGS += -Wl,-rpath,"/$$HOME/$$COMMON_LIBS"
+#QMAKE_LFLAGS += -Wl,-rpath,"/$$HOME/$$INSTALLDIR/macrofactory"
+#QMAKE_LFLAGS += -Wl,-rpath,"/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/stringhelper"
+#QMAKE_LFLAGS += -Wl,-rpath,"/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/macrofactory"
+#QMAKE_LFLAGS += -Wl,-rpath,"/home/zoli/build-common-Desktop_Qt_5_12_2_GCC_64bit2-Debug/stringhelper"
+#QMAKE_LFLAGS += -Wl,-rpath,"/home/zoli/build-common-Desktop_Qt_5_12_2_GCC_64bit2-Debug/macrofactory"
+INCLUDEPATH += /$$HOME/common
+DEPENDPATH += /$$HOME/common
+
 
 QMAKE_CXXFLAGS += -std=c++17
 QMAKE_CXXFLAGS += -Wall

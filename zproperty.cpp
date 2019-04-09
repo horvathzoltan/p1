@@ -1,5 +1,5 @@
 #include "zproperty.h"
-#include "zstringhelper.h"
+#include "stringhelper/stringhelper.h"
 
 #include <QMap>
 #include <QVariant>

@@ -13,8 +13,9 @@
 #include <QLabel>
 
 #include "globals.h"
-#include "zmacro.h"
 #include "zadminnode.h"
+#include "macrofactory/macro.h"
+
 
 masterDataForm::masterDataForm(QWidget *parent) : QWidget(parent)
 {

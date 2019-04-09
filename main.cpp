@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     mainWindow.show();
 
-    //
+    // TODO common/libs-be kell a common so-it publikálni, és onnan kell felszedni a p1.pro-ban
 
     md.zsql[md.SQL_SERVER_1] = new zSQL {"QMYSQL", "127.0.0.1", "wiki1", "root", "Aladar123", "aw1"};
     md.zsql[md.SQL_SERVER_2] = new zSQL {"QMYSQL", "127.0.0.1", "wiki2", "root", "Aladar123", "aw2"};

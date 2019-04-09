@@ -16,8 +16,9 @@
 #include "ztable.h"
 #include "zexception.h"
 #include "zproperty.h"
-#include "zstringhelper.h"
-#include "zmacro.h"
+//#include "zstringhelper.h"
+#include "stringhelper/stringhelper.h"
+#include "macrofactory/macro.h"
 #include "zglobal.h"
 #include "globals.h"
 
