@@ -6,8 +6,8 @@ MasterData::MasterData(QString _mainName) {
 
 MasterData::~MasterData(void) {
     qDebug("~MasterData(void)");
-    qDeleteAll(zentity);
-    zentity.clear();
-    zentity.squeeze();
+    qDeleteAll(ztables);
+    ztables.clear();
+    ztables.squeeze();
 }
 

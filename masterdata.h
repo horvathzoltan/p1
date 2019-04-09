@@ -17,7 +17,7 @@ class MasterData{
 
     QVector<zSQL*> zsql = QVector<zSQL*>(SQL_SERVER_MAX);
 
-    QVector<zTable*> zentity;
+    QVector<zTable*> ztables;
 
     MasterData(QString _mainName);
     ~MasterData(void);

@@ -53,7 +53,7 @@ void masterDataForm::setEntityList(QList<zListItem> *ptr)
 //}
 
 void masterDataForm::tableChanged(){
-    zTable *entity = md.zentity[zentity_ix];
+    zTable *entity = md.ztables[zentity_ix];
 
    // qDebug() << "EntityTypeSelected" << "name=" +item->text() <<" index=" << zentity_ix;
 
@@ -145,7 +145,7 @@ void masterDataForm::CreateUpdate(int ix_r)
 
     //zOperation *op = new zOperation(isCreate ? zOperation::c : zOperation::u, &md.user);
 
-    zTable *e = md.zentity[zentity_ix];
+    zTable *e = md.ztables[zentity_ix];
     psd.entity = e;
 
     qDebug() <<"CreateUpdate:"<< (isCreate ? "Create ": "Update ") <<  e->toString();

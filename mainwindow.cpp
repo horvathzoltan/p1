@@ -58,9 +58,9 @@ void MainWindow::on_MasterDataEditorAction_triggered()
      auto *w = new masterDataForm();
      QList<zListItem> sl1;
 
-     for(int i=0;i<md.zentity.length();i++)
+     for(int i=0;i<md.ztables.length();i++)
      {
-         zTable* e = md.zentity[i];
+         zTable* e = md.ztables[i];
 
          if(e!=nullptr)
          {
