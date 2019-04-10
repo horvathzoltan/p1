@@ -14,7 +14,7 @@
 
 #include "globals.h"
 #include "zadminnode.h"
-#include "macrofactory/macro.h"
+#include "common/macrofactory/macro.h"
 
 
 masterDataForm::masterDataForm(QWidget *parent) : QWidget(parent)

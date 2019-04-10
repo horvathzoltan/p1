@@ -21,6 +21,7 @@ class MasterData{
 
     MasterData(QString _mainName);
     ~MasterData(void);
+    void saveTables();
 };
 
 #endif // ZMAIN_H

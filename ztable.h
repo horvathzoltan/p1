@@ -104,6 +104,7 @@ public:
 
 
   //void saveTablaToXML();
+  QString toXML();
   void toXML(QXmlStreamWriter*);
   //static zTable fromXML(QXmlStreamReader* xml);
 

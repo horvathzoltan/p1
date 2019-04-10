@@ -19,6 +19,7 @@
 #include "zexception.h"
 #include "globals.h"
 
+
 //http://dev.mysql.com/downloads/file/?id=460909
 //mysql-connector-c++-1.1.7-winx64.msi
 
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
     entity1->rows.append(field4);
     md.ztables.append(entity1);
 
+    md.saveTables();
 
     //TODO zEntity->zTable
     //TODO zField->zTablerow

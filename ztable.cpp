@@ -17,10 +17,11 @@
 #include "zexception.h"
 #include "zproperty.h"
 //#include "zstringhelper.h"
-#include "stringhelper/stringhelper.h"
-#include "macrofactory/macro.h"
+#include "common/stringhelper/stringhelper.h"
+#include "common/macrofactory/macro.h"
 #include "zglobal.h"
 #include "globals.h"
+
 
 const QString zTable::PKNAME = QStringLiteral("pkname");
 
@@ -486,6 +487,19 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeEndElement();
 }
 
+QString zTable::toXML() {
+    QString e;
+    QXmlStreamWriter s(&e);
+    s.setAutoFormatting(true);
+    s.writeStartDocument();
+
+    this->toXML(&s);
+    s.writeEndDocument();
+
+    return e;
+}
+
+
 QString zTable::pkname() const
 {
     if(hasPkname())
@@ -569,5 +583,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     return t;
 }
 */
+
+
 
 
