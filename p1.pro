@@ -88,6 +88,7 @@ unix:!macx:
     #LIBS += -L/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/macrofactory/ -lmacrofactory
     LIBS += -L/$$HOME/$$COMMON_LIBS -lstringhelper
     LIBS += -L/$$HOME/$$COMMON_LIBS/ -lmacrofactory
+    LIBS += -L/$$HOME/$$COMMON_LIBS/ -lzlog
 }
 
 QMAKE_LFLAGS += -Wl,-rpath,"/$$HOME/$$COMMON_LIBS"

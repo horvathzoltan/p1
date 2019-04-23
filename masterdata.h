@@ -9,6 +9,9 @@
 
 class MasterData{
   public:
+    enum class FileType:int {TXT, XML};
+    static const QMap<FileType, QString> FileTypeNames;
+
     QString mainName;
     zUser user;   
 
@@ -20,6 +23,10 @@ class MasterData{
     QVector<zTable*> ztables;
 
     MasterData(QString _mainName);
+
+
+    QString getProjectFileName(QString fn, FileType ft);
+
     ~MasterData(void);
     void saveTables();
 };
