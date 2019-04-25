@@ -3,11 +3,21 @@
 #include "ztable.h"
 #include "common/filehelper/filehelper.h"
 #include "common/zlog/zlog.h"
+#include <QDir>
 
-const QMap<MasterData::FileType, QString> MasterData::FileTypeNames
+const QMap<MasterData::FileType, MasterData::FileExt> MasterData::FileTypeExts
     {
-        {FileType::TXT, QStringLiteral("TXT")},
-        {FileType::XML, QStringLiteral("XML")}
+        {FileType::tableDef, FileExt::XML}
+    };
+
+const QMap<MasterData::FileExt, QString> MasterData::FileTypeExtNames
+    {
+        {FileExt::XML, QStringLiteral("XML")}
+    };
+
+const QMap<MasterData::FileType, QString> MasterData::FileTypeDirs
+    {
+        {FileType::tableDef, QStringLiteral("tables")}
     };
 
 MasterData::MasterData(QString _mainName) {
@@ -27,30 +37,42 @@ void MasterData::saveTables(){
         zTrace();
         //zInfo(QStringLiteral("XML"));
         QString e = (*t)->toXML();
-        zInfo(e);
-        
-        // ha a project már volt mentve, akkor van neki projectdir
-        // ha nem , akkor kell egyet kreálni
-        auto pf = getProjectFileName((*t)->name, FileType::XML);
-        auto fn = "aaa";//zFileNameHelper::getFileName();
+        zInfo(e);             
+        auto fn = getProjectFileName((*t)->name, FileType::tableDef);
         zFileHelper::save(e, fn);
     }
 }
 
-QString MasterData::getProjectFileName(QString fn, FileType ft)
-{
-    if(FileTypeNames.contains(ft))
+QString MasterData::getProjectFileName(const QString& fn, FileType ft)
+{   
+    if(this->projectDir.isEmpty())
     {
-        //TODO get project dir, table mappa to project dir?
-        //valahogy rá kellene jönni, hogy milyen adatot mentünk
-        auto dir = QStringLiteral("a/b/c/d");
+        //TODO be kell kérni egy könyvtárat, vagy létre kell hozni egyet
+    }
 
-        auto filename = QStringliteral("%1/%2.%3").arg(dir,fn,FileTypeNames[ft]);
+    QString pdir;
+    if(FileTypeDirs.contains(ft))
+    {
+        pdir = QDir(projectDir).filePath(FileTypeDirs[ft]);
     }
     else
     {
-        zInfo(QStringLiteral("no FileTypeName: %1").arg(static_cast<int>(ft)));
+        pdir = projectDir;
     }
-    return "";
+    QString ffn;
+    if(FileTypeExts.contains(ft))
+    {
+        auto ext = FileTypeExts[ft];
+        if(FileTypeExtNames.contains(ext))
+        {
+            ffn = fn+"."+FileTypeExtNames[ext];
+        }
+    }
+    if(ffn.isEmpty())
+    {
+        ffn = fn;
+    }
+
+    return QDir(pdir).filePath(ffn);
 }
 

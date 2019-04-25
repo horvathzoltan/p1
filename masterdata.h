@@ -9,9 +9,13 @@
 
 class MasterData{
   public:
-    enum class FileType:int {TXT, XML};
-    static const QMap<FileType, QString> FileTypeNames;
+    enum class FileType:int {tableDef};
+    enum class FileExt:int {TXT, XML};
+    static const QMap<FileType, FileExt> FileTypeExts;
+    static const QMap<FileExt, QString> FileTypeExtNames;
+    static const QMap<FileType, QString> FileTypeDirs;
 
+    QString projectDir;
     QString mainName;
     zUser user;   
 
@@ -25,7 +29,7 @@ class MasterData{
     MasterData(QString _mainName);
 
 
-    QString getProjectFileName(QString fn, FileType ft);
+    QString getProjectFileName(const QString& fn, FileType ft);
 
     ~MasterData(void);
     void saveTables();
