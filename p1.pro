@@ -16,7 +16,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
+    filetypehelper.cpp \
+    #isettings.cpp \
     zAbstractModel.cpp \
+    zsettings.cpp \
+    #zsettingshelper.cpp \
     zsql.cpp \
     zfield.cpp \
     ztipus.cpp \
@@ -38,7 +42,11 @@ SOURCES += main.cpp \
     #zlogicexception.cpp
 
 HEADERS  += \
+    filetypehelper.h \
+    #isettings.h \
     zAbstractModel.h \
+    zsettings.h \
+    #zsettingshelper.h \
     zsql.h \
     zfield.h \
     zvalidation.h \
@@ -83,12 +91,14 @@ DEPENDPATH += $$PWD/../../mysql/include
 
 #unix:!macx: LIBS += -L/home/zoli/build-common-Desktop_Qt_5_12_2_GCC_64bit2-Debug/stringhelper/ -lstringhelper
 unix:!macx:
-{
-    #LIBS += -L/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/stringhelper/ -lstringhelper
-    #LIBS += -L/home/zoli/build-common-Desktop_Qt_5_9_0_GCC_64bit-Debug/macrofactory/ -lmacrofactory
-    LIBS += -L/$$HOME/$$COMMON_LIBS -lstringhelper
-    LIBS += -L/$$HOME/$$COMMON_LIBS/ -lmacrofactory
-    LIBS += -L/$$HOME/$$COMMON_LIBS/ -lzlog
+{   
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lstringhelper
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lfilehelper
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lzlog
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lmacrofactory
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lshortguid
+LIBS += -L$$HOME/$$COMMON_LIBS/ -linihelper
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lsettingshelper
 }
 
 QMAKE_LFLAGS += -Wl,-rpath,"/$$HOME/$$COMMON_LIBS"

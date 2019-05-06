@@ -6,15 +6,12 @@
 #include "zoperation.h"
 #include <qstring.h>
 #include "zuser.h"
+#include "common/macrofactory/macro.h"
+#include "filetypehelper.h"
 
 class MasterData{
   public:
-    enum class FileType:int {tableDef};
-    enum class FileExt:int {TXT, XML};
-    static const QMap<FileType, FileExt> FileTypeExts;
-    static const QMap<FileExt, QString> FileTypeExtNames;
-    static const QMap<FileType, QString> FileTypeDirs;
-
+    QWidget *mainWidget = nullptr;
     QString projectDir;
     QString mainName;
     zUser user;   
@@ -29,10 +26,14 @@ class MasterData{
     MasterData(QString _mainName);
 
 
-    QString getProjectFileName(const QString& fn, FileType ft);
+    QString getProjectFileName(const QString& fn, FileTypeHelper::FileType ft);
 
     ~MasterData(void);
     void saveTables();
+    void load();
+    void save();
+    QString toIni();
+    void parseIni(QString);
 };
 
 #endif // ZMAIN_H

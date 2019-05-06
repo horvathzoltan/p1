@@ -3,5 +3,6 @@
 
 #include "globals.h"
 
+zSettings settings;
 MasterData md("feldolgozó");
 zItemEditorFactory zif;

@@ -19,7 +19,7 @@ public:
     ~MainWindow();
     void addWidget(QWidget *w);
 
-private:
+private:    
     Ui::MainWindow *ui;
     //void createActions();
     QSignalMapper *pSignalMapper;

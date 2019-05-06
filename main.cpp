@@ -18,7 +18,8 @@
 
 #include "zexception.h"
 #include "globals.h"
-
+//#include "zsettingshelper.h"
+#include "common/settingshelper/zsettingshelper.h"
 
 //http://dev.mysql.com/downloads/file/?id=460909
 //mysql-connector-c++-1.1.7-winx64.msi
@@ -32,6 +33,21 @@ int main(int argc, char *argv[])
 
     MainWindow mainWindow;
 
+    QApplication::setOrganizationName(QStringLiteral("zCompany"));
+    QApplication::setOrganizationDomain(QStringLiteral("company.com"));
+    QApplication::setApplicationName(QStringLiteral("p1"));
+
+    //auto fn = zSettingsHelper::getFileName();
+    //TODO elvileg ez lehet a exe mellett, és lehet a .configban is
+    zSettingsHelper::init(QApplication::applicationDirPath(), &settings);
+
+    // ha még nincs beállítások, akkor most lesz
+    if(!zSettingsHelper::loadSettings())
+    {
+        zSettingsHelper::saveSettings();
+    }
+
+    md.mainWidget = &mainWindow;
     mainWindow.setWindowTitle(md.mainName);
 
     mainWindow.show();
@@ -70,8 +86,10 @@ int main(int argc, char *argv[])
     entity1->rows.append(field4);
     md.ztables.append(entity1);
 
+    md.load();
     md.saveTables();
 
+    md.save();
     //TODO zEntity->zTable
     //TODO zField->zTablerow
     //TODO zTable -  forrásra és a dokumentációra utaló adatok
