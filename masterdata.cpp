@@ -23,7 +23,7 @@ MasterData::~MasterData() {
 
 // TODO MasterData -> Project
 void MasterData::load(){
-    auto fn = getProjectFileName(nameof(MasterData), FileTypeHelper::FileType::ini);
+    auto fn = getProjectFileName("projects", FileTypeHelper::FileType::ini);
 
     if(fn.isEmpty()){
         zInfo(QStringLiteral("File not exist:%1").arg(fn));
@@ -35,9 +35,11 @@ void MasterData::load(){
 }
 
 void MasterData::save(){
-    auto fn = getProjectFileName(nameof(MasterData), FileTypeHelper::FileType::ini);
+    auto fn = getProjectFileName("projects", FileTypeHelper::FileType::ini);
 
     auto ini = this->toIni();
+    //TODO ha hiba van, jusson ki a képernyőre
+    //ha relatív path, akkor nem működik
     zFileHelper::save(ini, fn);
 }
 
@@ -51,8 +53,8 @@ QString MasterData::toIni()
     e += nameof(projectDir)+'='+projectDir+zStringHelper::NewLine;
     return e;*/
     m.insert(nameof(mainName), mainName);
-    m.insert(nameof(projectDir), projectDir);
-    return zIniHelper::toString(m, "MasterData");
+    m.insert(nameof(path), path);
+    return zIniHelper::toString(m, "projects");
 }
 
 void MasterData::parseIni(QString ini)
@@ -60,7 +62,7 @@ void MasterData::parseIni(QString ini)
     if(ini.isEmpty()) return;
     auto m = zIniHelper::parseIni(ini);
     mainName = m[nameof(mainName)];
-    projectDir = m[nameof(projectDir)];
+    path = m[nameof(path)];
 }
 
 
@@ -75,28 +77,31 @@ void MasterData::saveTables(){
     }
 }
 
+//TODO getProjectFileName->DataTables
+// a projectsDir/projectDir/Data
+// ha nincs meg a dir, létre kell hozni
 QString MasterData::getProjectFileName(const QString& fn, FileTypeHelper::FileType ft)
 {
     //TODO projectsroot
-    if(this->projectDir.isEmpty())
+    if(this->path.isEmpty())
     {
         QWidget* dialogParent= mainWidget;
         //TODO be kell kérni egy könyvtárat, vagy létre kell hozni egyet
         //QFileDialog dialog(dialogParent);
         //dialog.setFileMode(QFileDialog::Directory);        
-        projectDir = QFileDialog::getExistingDirectory(dialogParent, QStringLiteral("Select Output Folder"), QDir::currentPath(),
+        path = QFileDialog::getExistingDirectory(dialogParent, QStringLiteral("Select Output Folder"), QDir::currentPath(),
                                           QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if(projectDir.isEmpty()) return "";
+        if(path.isEmpty()) return "";
     }
 
     QString pdir;
     if(FileTypeHelper::FileTypeDirs.contains(ft))
     {
-        pdir = QDir(projectDir).filePath(FileTypeHelper::FileTypeDirs[ft]);
+        pdir = QDir(path).filePath(FileTypeHelper::FileTypeDirs[ft]);
     }
     else
     {
-        pdir = projectDir;
+        pdir = path;
     }
     QString ffn;
     if(FileTypeHelper::FileTypeExts.contains(ft))

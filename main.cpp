@@ -86,7 +86,24 @@ int main(int argc, char *argv[])
     entity1->rows.append(field4);
     md.ztables.append(entity1);
 
-    md.load();
+    // TODO settings: projectPath=p1Projects - itt nem abszolut path van - ha relatív azt hogyan értelmezzük /home/user/p1Projects??
+    // mainName=feldolgozó -> settings?
+    // projectPath/projects.ini:
+    // ebben minden sor egy project.ini-re mutat
+    // rel path: projectPath, absPath onnan ahova mutat
+    // project név
+    // project típus
+    // dataDir: Data
+    // a path a project ini-t tartalmazó könyvárra mutat
+    // a dataPath a project adatait tartalmazó fájlokat tartalmazza - táblák, stb...
+
+    md.path = settings.projectPath;
+    md.save();
+    //md.load();
+    // TODO saveTables:
+    // a projectsDir/projectDir/DataTables
+
+    // filehelper zlog::dialog... nincs dialog - itt kell egy metódus, ami csinál dialogot szöveggel és azt oda beinitelni
     md.saveTables();
 
     md.save();

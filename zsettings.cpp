@@ -11,16 +11,16 @@ void zSettings::parseIni(QMap<QString, QString>m)
     //bool isok = false;
 
    // getKey(m, &projectsDir, nameof(projectsDir), &isok );
-    if(m.contains(nameof(projectsDir)))
+    if(m.contains(nameof(projectPath)))
     {
-        projectsDir = m[nameof(projectsDir)];
+        projectPath = m[nameof(projectPath)];
     }
 }
 
 QMap<QString, QString> zSettings::toIni()
 {
     QMap<QString, QString> m;    
-    m.insert(nameof(projectsDir), projectsDir);
+    m.insert(nameof(projectPath), projectPath);
     return m;
 }
 

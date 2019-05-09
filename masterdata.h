@@ -12,7 +12,7 @@
 class MasterData{
   public:
     QWidget *mainWidget = nullptr;
-    QString projectDir;
+    QString path;
     QString mainName;
     zUser user;   
 

@@ -20,8 +20,8 @@ const QMap<FileTypeHelper::FileType, FileTypeHelper::FileExt> FileTypeHelper::Fi
 
 const QMap<FileTypeHelper::FileExt, QString> FileTypeHelper::FileTypeExtNames
     {
-        {FileExt::XML, QStringLiteral("XML")},
-        {FileExt::INI, QStringLiteral("INI")}
+        {FileExt::XML, QStringLiteral("xml")},
+        {FileExt::INI, QStringLiteral("ini")}
     };
 
 const QMap<FileTypeHelper::FileType, QString> FileTypeHelper::FileTypeDirs

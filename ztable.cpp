@@ -54,7 +54,7 @@ QSqlRelationalTableModel* zTable::getModel(){
 zTable::zTable ( zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList ){
     zsql = _zsql;
     sql_table = _tablanev;
-    //name = _name;
+    name = _tablanev;
     caption = _caption;
     comment = _comment;
     rows = _fieldList;
@@ -79,7 +79,8 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev){
 
 zTable::zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_props){
     zsql = _zsql;
-    sql_table = _tablanev;
+    sql_table = _tablanev;    
+    name = _tablanev;
 
     QStringList err;
 

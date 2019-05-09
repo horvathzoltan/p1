@@ -12,7 +12,7 @@ class zSettings : public ISettings
 public:
     zSettings();
     
-    QString projectsDir=QStringLiteral("p1Projects");
+    QString projectPath=QStringLiteral("p1Projects");
     
     void parseIni(QMap<QString, QString>) final;
     QMap<QString, QString> toIni() final;
