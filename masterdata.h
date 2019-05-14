@@ -14,6 +14,7 @@ class MasterData{
     QWidget *mainWidget = nullptr;
     QString path;
     QString mainName;
+    // ezt nem itt kell
     zUser user;   
 
     enum zEntityIx {ZENTITY0, ZENTITY1, ZENTITYMAX };
@@ -26,7 +27,7 @@ class MasterData{
     MasterData(QString _mainName);
 
 
-    QString getProjectFileName(const QString& fn, FileTypeHelper::FileType ft);
+    //QString getProjectFileName(const QString& fn, FileTypeHelper::FileType ft);
 
     ~MasterData(void);
     void saveTables();

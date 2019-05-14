@@ -26,6 +26,7 @@
 
 //extern MasterData md;//("feldolgozó");
 //extern zItemEditorFactory zif;
+#include "filenamehelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +49,9 @@ int main(int argc, char *argv[])
     }
 
     md.mainWidget = &mainWindow;
+    FileNameHelper::init(&mainWindow, &settings);
     mainWindow.setWindowTitle(md.mainName);
+
 
     mainWindow.show();
 
@@ -97,7 +100,7 @@ int main(int argc, char *argv[])
     // a path a project ini-t tartalmazó könyvárra mutat
     // a dataPath a project adatait tartalmazó fájlokat tartalmazza - táblák, stb...
 
-    md.path = settings.projectPath;
+    md.path = QStringLiteral("p1Projects");
     md.save();
     //md.load();
     // TODO saveTables:

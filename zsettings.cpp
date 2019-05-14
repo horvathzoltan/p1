@@ -24,6 +24,10 @@ QMap<QString, QString> zSettings::toIni()
     return m;
 }
 
+QString zSettings::getProjectPath()
+{
+    return projectPath;
+}
 
 //void zSettings::getKey(const QMap<QString, QString>& m, QString* v, QString key, bool *isOk)
 //{

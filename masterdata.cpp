@@ -6,9 +6,8 @@
 #include "common/zlog/zlog.h"
 #include "common/macrofactory/macro.h"
 #include "common/inihelper/zinihelper.h"
-#include <QDir>
-#include <QFileDialog>
 
+#include "filenamehelper.h"
 
 MasterData::MasterData(QString _mainName) {
     this->mainName = _mainName;
@@ -23,7 +22,7 @@ MasterData::~MasterData() {
 
 // TODO MasterData -> Project
 void MasterData::load(){
-    auto fn = getProjectFileName("projects", FileTypeHelper::FileType::ini);
+    auto fn = FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
 
     if(fn.isEmpty()){
         zInfo(QStringLiteral("File not exist:%1").arg(fn));
@@ -35,7 +34,7 @@ void MasterData::load(){
 }
 
 void MasterData::save(){
-    auto fn = getProjectFileName("projects", FileTypeHelper::FileType::ini);
+    auto fn = FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
 
     auto ini = this->toIni();
     //TODO ha hiba van, jusson ki a képernyőre
@@ -72,55 +71,10 @@ void MasterData::saveTables(){
         zTrace();
         QString e = (*t)->toXML();
         zInfo(e);
-        auto fn = getProjectFileName((*t)->name, FileTypeHelper::FileType::tableDef);
+        auto fn = FileNameHelper::getProjectFileName(path, (*t)->name, FileTypeHelper::FileType::tableDef);
         zFileHelper::save(e, fn);
     }
 }
 
-//TODO getProjectFileName->DataTables
-// a projectsDir/projectDir/Data
-// ha nincs meg a dir, létre kell hozni
-QString MasterData::getProjectFileName(const QString& fn, FileTypeHelper::FileType ft)
-{
-    //TODO projectsroot
-    if(this->path.isEmpty())
-    {
-        QWidget* dialogParent= mainWidget;
-        //TODO be kell kérni egy könyvtárat, vagy létre kell hozni egyet
-        //QFileDialog dialog(dialogParent);
-        //dialog.setFileMode(QFileDialog::Directory);        
-        path = QFileDialog::getExistingDirectory(dialogParent, QStringLiteral("Select Output Folder"), QDir::currentPath(),
-                                          QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if(path.isEmpty()) return "";
-    }
 
-    QString pdir;
-    if(FileTypeHelper::FileTypeDirs.contains(ft))
-    {
-        pdir = QDir(path).filePath(FileTypeHelper::FileTypeDirs[ft]);
-    }
-    else
-    {
-        pdir = path;
-    }
-    QString ffn;
-    if(FileTypeHelper::FileTypeExts.contains(ft))
-    {
-        auto ext = FileTypeHelper::FileTypeExts[ft];
-        if(FileTypeHelper::FileTypeExtNames.contains(ext))
-        {
-            ffn = fn+"."+FileTypeHelper::FileTypeExtNames[ext];
-        }
-    }
-    else
-    {
-        zInfo(QStringLiteral("No file extension to FileType: ").arg(FileTypeHelper::toString(ft)));
-    }
-    if(ffn.isEmpty())
-    {
-        ffn = fn;
-    }
-
-    return QDir(pdir).filePath(ffn);
-}
 

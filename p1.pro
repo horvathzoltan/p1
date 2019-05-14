@@ -16,6 +16,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
+    filenamehelper.cpp \
     filetypehelper.cpp \
     #isettings.cpp \
     zAbstractModel.cpp \
@@ -42,6 +43,7 @@ SOURCES += main.cpp \
     #zlogicexception.cpp
 
 HEADERS  += \
+    filenamehelper.h \
     filetypehelper.h \
     #isettings.h \
     zAbstractModel.h \

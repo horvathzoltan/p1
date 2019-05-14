@@ -9,14 +9,17 @@
 
 class zSettings : public ISettings
 {
+private:
+    QString projectPath=QStringLiteral("p1Projects");
 public:
     zSettings();
-    
-    QString projectPath=QStringLiteral("p1Projects");
-    
+            
     void parseIni(QMap<QString, QString>) final;
     QMap<QString, QString> toIni() final;
+
+    QString getProjectPath();
     //static void getKey(const QMap<QString, QString>&, QString*, QString, bool *);
+
 };
 
 #endif // ZSETTINGS_H
