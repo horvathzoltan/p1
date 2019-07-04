@@ -40,7 +40,7 @@ QVariant zItemEditorFactory::getEditorValue(QWidget* w){
     else return QVariant();
 }
 
-void zItemEditorFactory::initEditor(QWidget* w, zField* f, int flag, QVariant v){
+void zItemEditorFactory::initEditor(QWidget* w, zTablerow* f, int flag, QVariant v){
 
     QString placeholder = f->placeholder;
     if(f->isRequired){

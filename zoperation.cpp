@@ -8,25 +8,28 @@ zOperation::zOperation(opType type, zUser *u){
 }
 
 QString zOperation::toString(){
-    return QString("timestamp:%1, type:%2, user:%3, uuid:%4")
+    return QStringLiteral("timestamp:%1, type:%2, user:%3, uuid:%4")
             .arg(this->timestamp.toString())
             .arg(this->type)
             .arg(this->user->getUsername())
             .arg(this->uuid.toString());
 }
 
-QString zOperation::toString(enum opType e){
+QString zOperation::toString(enum opType e)
+{
     switch(e){
     case zOperation::c:
-        return QString("create");
+        return QStringLiteral("create");
     case zOperation::u:
-        return QString("update");
+        return QStringLiteral("update");
     case zOperation::d:
-        return QString("delete");
+        return QStringLiteral("delete");
     case zOperation::r:
-        return QString("read");
+        return QStringLiteral("read");
     case zOperation::s:
-        return QString("select");
+        return QStringLiteral("select");
+    default:
+        return QString();
     }
 }
 

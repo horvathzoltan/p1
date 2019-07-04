@@ -8,10 +8,11 @@
 
 //http://doc.qt.io/qt-5/sql-types.html
 //enum zType {NONE, INT, VARCHAR};
+namespace helpers {
 
-class zTypeHelper{
+class TypeHelper{
 public:
-     static QMetaType::Type toZtype(QString str, int length,  bool isUnsigned = false){
+     static QMetaType::Type toType(QString str, int length,  bool isUnsigned = false){
           if(str == "int") return isUnsigned ? QMetaType::UInt : QMetaType::Int;
           else if(str == "bit" || str == "tinyint"){
               if(length>1)
@@ -38,11 +39,13 @@ public:
           }
       }
 
-     static QString toString(QMetaType::Type t){
+     static QString toString(QMetaType::Type t)
+      {
          if(t == QMetaType::UnknownType)
-            return "UnknownType";
-         else
-            return QMetaType::typeName(t);
+         {
+             return QStringLiteral("UnknownType");
+         }
+         return QMetaType::typeName(t);
      }
 };
 
@@ -127,4 +130,5 @@ static QVariant::Type qDecodeMYSQLType(int mysqltype, uint flags)
     return type;
 }
 */
+}
 #endif // ZTIPUS_H

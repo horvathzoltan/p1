@@ -3,6 +3,7 @@
 
 #include <QMap>
 
+namespace helpers{
 struct FileTypeHelper{
     enum class FileType {tableDef, ini };
     static const QMap<FileType, QString> FileTypeName;
@@ -13,5 +14,5 @@ struct FileTypeHelper{
 
     static QString toString(FileType);
 };
-
+}
 #endif // FILETYPEHELPER_H

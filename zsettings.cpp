@@ -1,6 +1,6 @@
 #include "zsettings.h"
 #include "common/macrofactory/macro.h"
-#include "common/inihelper/zinihelper.h"
+#include "common/helper/ini/inihelper.h"
 
 
 zSettings::zSettings()

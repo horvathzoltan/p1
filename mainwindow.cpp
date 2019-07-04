@@ -24,9 +24,9 @@ MainWindow::~MainWindow()
 {
     delete ui;
 
-    qDeleteAll(md.zsql);
-    md.zsql.clear();
-    md.zsql.squeeze();
+    //qDeleteAll(md.zsql);
+    //md.zsql.clear();
+    //md.zsql.squeeze();
 }
 
 //void MainWindow::createActions()
@@ -58,18 +58,21 @@ void MainWindow::on_MasterDataEditorAction_triggered()
      auto *w = new masterDataForm();
      QList<zListItem> sl1;
 
-     for(int i=0;i<md.ztables.length();i++)
+     auto p1 = md.projects[0];
+     for(int i=0;i<p1.tables.length();i++)
      {
-         zTable* e = md.ztables[i];
+         zTable e = p1.tables[i];
+           sl1.append({e.caption, i});
 
-         if(e!=nullptr)
-         {
-             sl1.append({e->caption, i});
-         }
-         else
-         {
-             qDebug() <<"NULL";
-         }
+
+//         if(e!=nullptr)
+//         {
+//             sl1.append({e->caption, i});
+//         }
+//         else
+//         {
+//             qDebug() <<"NULL";
+//         }
      };
 
 

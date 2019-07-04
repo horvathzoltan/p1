@@ -52,14 +52,17 @@ void masterDataForm::setEntityList(QList<zListItem> *ptr)
 //    qDebug("aaaa");
 //}
 
+// TODO meg kell nyitni az adatbázis connt, ha nincsen nyitva
+// a funkció bezárására be kell zárni a connt - close, majd remove
 void masterDataForm::tableChanged(){
-    zTable *entity = md.ztables[zentity_ix];
+    auto p1 = md.projects[0];
+    zTable t = p1.tables[zentity_ix];
 
    // qDebug() << "EntityTypeSelected" << "name=" +item->text() <<" index=" << zentity_ix;
 
     //QSqlRelationalTableModel* model = md.zentity[zentity_ix]->getModel();
     if(model) delete model;
-    model = entity->getModel();
+    model = t.getModel();
 
     // hogy állítsuk be a táblahosszt?
     //http://stackoverflow.com/questions/8766633/how-to-determine-the-correct-size-of-a-qtablewidget
@@ -70,9 +73,9 @@ void masterDataForm::tableChanged(){
         for(int i = 0;i<model->columnCount();i++){
             int field_ix = model->headerData(i, Qt::Horizontal, FieldIxRole).toInt();
 
-            zField *f = entity->rows[field_ix];
+            zTablerow f = t.rows[field_ix];
 
-            if(f->name == "id" || f->name=="admin" || f->name=="active" || f->name=="inactive"){
+            if(f.name == "id" || f.name=="admin" || f.name=="active" || f.name=="inactive"){
                 ui->tableView->setItemDelegateForColumn(i, &ned);
 
                 if(md.user.isInRole("admin"))
@@ -145,34 +148,35 @@ void masterDataForm::CreateUpdate(int ix_r)
 
     //zOperation *op = new zOperation(isCreate ? zOperation::c : zOperation::u, &md.user);
 
-    zTable *e = md.ztables[zentity_ix];
-    psd.entity = e;
+    auto p1 = md.projects[0];
+    zTable t = p1.tables[zentity_ix];
+    psd.entity = &t;
 
-    qDebug() <<"CreateUpdate:"<< (isCreate ? "Create ": "Update ") <<  e->toString();
+    qDebug() <<"CreateUpdate:"<< (isCreate ? "Create ": "Update ") <<  t.toString();
 
 //    QStyleOptionViewItem s;
 
     psd.ix_r = ix_r;
 
-    if(e->tabList.count()>0){
+    if(t.tabList.count()>0){
         psd.tabList.append({"_", QList<zControl> {} });
-        foreach(QString v, e->tabList)
+        foreach(QString v, t.tabList)
             psd.tabList.append({v, QList<zControl> {} });
         }
     else
         psd.tabList.append({"_", QList<zControl> {} });
 
     //Q_FOREACH(auto f, e->fieldList){
-    zforeach(f, e->rows){
+    zforeach(f, t.rows){
         int ix_c = -1;
 
         if(model)
-            ix_c = model->fieldIndex((*f)->name);
+            ix_c = model->fieldIndex(f->name);
 
-        if((*f)->tabIndex>-1 && (*f)->tabIndex<psd.tabList.length())
-            psd.tabList[(*f)->tabIndex].editorList.append(zControl((*f), ix_c));
+        if(f->tabIndex>-1 && f->tabIndex<psd.tabList.length())
+            psd.tabList[f->tabIndex].editorList.append(zControl(f, ix_c));
         else
-            psd.tabList[0].editorList.append(zControl((*f), ix_c));
+            psd.tabList[0].editorList.append(zControl(f, ix_c));
         }
 
     auto ps1 = new PropertySheet(0, psd);

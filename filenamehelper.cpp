@@ -1,8 +1,11 @@
 #include <QDir>
 #include <QFileDialog>
-#include "common/zlog/zlog.h"
+#include "common/logger/log.h"
 #include "filenamehelper.h"
 #include "zsettings.h"
+#include <QApplication>
+
+namespace helpers{
 
 QWidget* FileNameHelper::mainWidget;
 zSettings* FileNameHelper::settings;
@@ -23,7 +26,7 @@ void FileNameHelper::init(QWidget *w, zSettings *s)
 //TODO getProjectFileName->DataTables
 // a projectsDir/projectDir/Data
 // ha nincs meg a dir, létre kell hozni
-QString FileNameHelper::getProjectFileName(const QString& path, const QString& fn, FileTypeHelper::FileType ft)
+QString FileNameHelper::getProjectFileName(const QString& path, const QString& fn, FileTypeHelper::FileType ft, bool isRelative)
 {
     //TODO itt tudni kell, hogy ki a szüleje az ablaknak - initparameter
 //    if(path.isEmpty())
@@ -48,20 +51,26 @@ QString FileNameHelper::getProjectFileName(const QString& path, const QString& f
     }
 
     // ha relatív, akkor a settings alapján lehet meghatározni, hova kell mutasson
-    QFileInfo fi(pdir);
-    if(fi.isRelative())
-    {        
-        auto prjs = settings->getProjectPath();
-        if(pdir.isEmpty())
-        {
-            pdir = QDir::home().filePath(prjs);
-        }
-        else
-        {
-            pdir = QDir::home().filePath(prjs+SEP+pdir);
-        }
+    //QFileInfo fi(pdir);
 
+    if(!isRelative)
+    {
+        pdir = getAbsolutFileName(pdir);
     }
+//    if(!isRelative && fi.isRelative())
+//    {
+
+//        auto prjs = settings->getProjectPath();
+//        if(pdir.isEmpty())
+//        {
+//            pdir = QDir::home().filePath(prjs);
+//        }
+//        else
+//        {
+//            pdir = QDir::home().filePath(prjs+SEP+pdir);
+//        }
+
+//    }
 
     QString ffn;
     if(FileTypeHelper::FileTypeExts.contains(ft))
@@ -84,3 +93,32 @@ QString FileNameHelper::getProjectFileName(const QString& path, const QString& f
     auto fullname = QDir(pdir).filePath(ffn);
     return fullname;
 }
+
+QString FileNameHelper::getSettingsFileName()
+{
+    //TODO a telepített program mellett van egy conf, de azt a user conf felülírja
+    auto conf = QDir::home().path()+QStringLiteral("/.config/%1/%2.conf").arg(QApplication::organizationName(),QApplication::applicationName());
+        
+    auto e = QApplication::applicationDirPath();          
+
+    return e;
+}
+
+
+QString FileNameHelper::getAbsolutFileName(const QString& fn)
+{
+    // ha relatív, akkor a settings alapján lehet meghatározni, hova kell mutasson
+    QFileInfo fi(fn);
+    if(fi.isRelative())
+    {
+        auto prjs = settings->getProjectPath();
+        if(fn.isEmpty())
+        {
+            return QDir::home().filePath(prjs);
+        }
+        return QDir::home().filePath(prjs+SEP+fn);
+    }
+    return fn;
+}
+
+} // namespace helpers

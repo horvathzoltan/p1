@@ -1,5 +1,5 @@
 #include "zproperty.h"
-#include "common/stringhelper/stringhelper.h"
+#include "common/helper/string/stringhelper.h"
 
 #include <QMap>
 #include <QVariant>
@@ -52,7 +52,7 @@ bool
 */
 void zProperty::getProperty(QString pname, bool *eredmeny, QMap<QString, QString> *_props)
 {
-    *eredmeny= zStringHelper::toBool(_props->value(pname));
+    *eredmeny= com::helper::StringHelper::toBool(_props->value(pname));
 }
 
 

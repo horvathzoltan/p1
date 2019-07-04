@@ -24,7 +24,7 @@ class PropertySheet;
 struct zControl{
 public:   
    //QString caption;
-   zField* field;
+   zTablerow* field;
    QWidget* editor;
    int ix_c;
    //QModelIndex modelIndex;
@@ -32,7 +32,7 @@ public:
    // validáció
    // maszk
    // tooltip
-    zControl(zField*, int);
+    zControl(zTablerow*, int);
    ~zControl();
 };
 

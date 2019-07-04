@@ -4,14 +4,17 @@
 #include <QString>
 #include <QVariantMap>
 #include <QItemDelegate>
-#include "ztipus.h"
-//#include <QAction>
+#include "TypeHelper.h"
+#include <QXmlStreamReader>
 
-struct zField{
+struct zTablerow{
 public:
+    zTablerow();
     QString name; //az adatbázis mező
     QMetaType::Type type; //az adatbázis oszlop típusa
     int length; //karakterek/értékes jegyek száma - http://stackoverflow.com/questions/10081500/mysql-char-varchar-character-sets-storage-sizes
+
+    bool isNullable;
 
     QString caption;
     QString comment;
@@ -19,7 +22,18 @@ public:
     QString placeholder;
     QString tooltip;
     QString help;
+    //QString typeName;
+/*
+ *
+ *
+    QString Caption;
+    QString colName;
+    QString colType;
+    int dlen;
+    bool isNullable;
+    QString comment;
 
+*/
     //QAction *helpAction;
     //zValidation validation; //itt egy típustól függő szabályt kell leírni ami a kliens számára ad iránymutatást
     //numerikus min=1, max=10, def=5, exclude=7,8,9
@@ -42,15 +56,19 @@ public:
     //ZF - Zero-Filled
     //AI - Auto Increment
 
-    zField(QString _name, QString _type, QMap<QString, QString> *_props, QVariant _defVal, bool _nullable);
-    zField(QString _name, QString _type);
+    zTablerow(QString _name, QString _type, QMap<QString, QString> *_props, QVariant _defVal, bool _nullable);
+    zTablerow(QString _name, QString _type);
 
-    ~zField(void);
+    ~zTablerow();
 
-    QString toString(zField *z);
-    QString toString(void);
+    QString toString(zTablerow *z);
+    QString toString();
 
     QItemDelegate *itemDelegate;
+
+    static zTablerow fromXML(QXmlStreamReader* s);
+    static int findIx(const QVector<zTablerow> &rows, const QString &rn);
+    void toXML(QXmlStreamWriter*);
 };
 
 

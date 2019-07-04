@@ -1,6 +1,8 @@
 #include "common/macrofactory/macro.h"
 #include "filetypehelper.h"
 
+using namespace helpers;
+
 const QMap<FileTypeHelper::FileType, QString> FileTypeHelper::FileTypeName
     {
         {FileType::tableDef,  nameof(FileType::tableDef)},

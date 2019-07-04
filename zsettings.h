@@ -1,7 +1,7 @@
 #ifndef ZSETTINGS_H
 #define ZSETTINGS_H
 
-#include "common/settingshelper/isettings.h"
+#include "common/helper/settings/isettings.h"
 
 //#include <QApplication>
 //#include <QDir>

@@ -6,10 +6,7 @@
 #include "QTimeZone"
 
 // {"caption":"Vezetéknév"}
-zAdminNode::zAdminNode(int type)
-{
 
-}
 
 void zAdminNode::aobjUpdate(QJsonObject *aobj, zOperation o)
 {

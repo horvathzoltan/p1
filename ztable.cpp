@@ -17,19 +17,33 @@
 #include "zexception.h"
 #include "zproperty.h"
 //#include "zstringhelper.h"
-#include "common/stringhelper/stringhelper.h"
+#include "common/helper/string/stringhelper.h"
 #include "common/macrofactory/macro.h"
+#include "common/helper/xml/xmlhelper.h"
+#include "common/logger/log.h"
 #include "zglobal.h"
 #include "globals.h"
 
 
+
 const QString zTable::PKNAME = QStringLiteral("pkname");
 
-QSqlRelationalTableModel* zTable::getModel(){
-    if(!this->zsql) return nullptr;
-    qDebug() << "getModel: " << this->zsql->connectionName;// << ':' << this->tablanev;
+zTable::zTable()
+{
+    sql_isValid = false;
+    source_isValid = false;
+    document_isValid = false;
+    //zsql = nullptr;
+}
 
-    QSqlRelationalTableModel *model = new QSqlRelationalTableModel(NULL, this->zsql->db);
+
+QSqlRelationalTableModel* zTable::getModel(){
+    auto db = helpers::SqlHelper::getDb(this->sql_conn);//&md.zsql[this->sql_conn];
+
+    //if(!zsql) return nullptr;
+    //qDebug() << "getModel: " << this->zsql->toString();//connectionName;// << ':' << this->tablanev;
+
+    QSqlRelationalTableModel *model = new QSqlRelationalTableModel(nullptr, db);
 
     model->setTable(this->sql_table);
     //model->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -39,10 +53,10 @@ QSqlRelationalTableModel* zTable::getModel(){
         auto columnCount = model->columnCount();
         for(int i=0;i<columnCount;i++){
             for(int j =0;j<rows.length();j++){
-                zField *f  = rows[j];
-                if(f->name == model->headerData(i, Qt::Horizontal)){
+                zTablerow f  = rows[j];
+                if(f.name == model->headerData(i, Qt::Horizontal)){
                     model->setHeaderData(i, Qt::Horizontal, j, FieldIxRole);
-                    model->setHeaderData(i, Qt::Horizontal, f->caption);
+                    model->setHeaderData(i, Qt::Horizontal, f.caption);
                     break;
                 }
             }
@@ -51,17 +65,14 @@ QSqlRelationalTableModel* zTable::getModel(){
     return model;
 }
 
-zTable::zTable ( zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList ){
-    zsql = _zsql;
+zTable::zTable (const QString& _tablanev, QString _caption, QString _comment, QVector<zTablerow> _fieldList ){
+    //zsql = _zsql;
     sql_table = _tablanev;
     name = _tablanev;
     caption = _caption;
     comment = _comment;
     rows = _fieldList;
 
-#ifdef QT_DEBUG
-    Z_DEBUG(this->toString());
-#endif
 };
 
 /*
@@ -77,8 +88,8 @@ zEntity::zEntity (zSQL* _zsql, QString _tablanev){
 
 
 
-zTable::zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_props){
-    zsql = _zsql;
+zTable::zTable (QString _tablanev, const QMap<QString, QString> &_props){
+    //zsql = _zsql;
     sql_table = _tablanev;    
     name = _tablanev;
 
@@ -119,14 +130,14 @@ zTable::zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString> &_p
 }
 
 
-zTable::~zTable(void){
-    qDebug("~zEntity(void)");
-    if(!((this->sql_table.isEmpty()) || (this->zsql == nullptr))) {
-        qDeleteAll(this->rows);
-        this->rows.clear();
-        this->rows.squeeze();
-    }
-}
+//zTable::~zTable(){
+//    zTrace();
+//    //if(!((this->sql_table.isEmpty()) || (this->zsql == nullptr))) {
+//       // qDeleteAll(this->rows);
+//       // this->rows.clear();
+//       // this->rows.squeeze();
+//   // }
+//}
 
 QString zTable::toString() const
 {
@@ -138,8 +149,7 @@ QString zTable::toString() const
         if(!rs.isEmpty())
         {
             rs += ',';
-        }
-        /*
+        }       
         if(r->name==this->pkname())
         {
             rs += QStringLiteral("PK:");
@@ -221,7 +231,10 @@ int zTable::getFields(void){
 
     //this->zsql->doQuery(&fieldcount, &zEntity::rowToFieldList, "SHOW columns FROM "+this->tablanev, &this->fieldList, NULL);
 
-    QSqlQuery query("DESCRIBE "+this->sql_table, this->zsql->db);
+    //auto zsql = &md.zsql[this->sql_conn];
+    auto db = helpers::SqlHelper::getDb(this->sql_conn);
+
+    QSqlQuery query("DESCRIBE "+this->sql_table, db);
 
     if(query.exec()){
         while (query.next()) {
@@ -235,9 +248,9 @@ int zTable::getFields(void){
 */
             QSqlQuery query2("SELECT column_comment, column_default "
                              "FROM INFORMATION_SCHEMA.COLUMNS "
-                             "WHERE table_schema='"+this->zsql->databaseName+"' "
+                             "WHERE table_schema='"+db.databaseName()+"' "
                                "and table_name='"+this->sql_table+"' "
-                               "and COLUMN_NAME = '"+fieldName+"';", this->zsql->db);
+                                                   "and COLUMN_NAME = '"+fieldName+"';", db);
             query2.setForwardOnly(true);
             query2.next();
 
@@ -245,11 +258,10 @@ int zTable::getFields(void){
 
             //http://stackoverflow.com/questions/18829018/qt-sql-get-column-type-and-name-from-table-without-record
 
-            auto field = new zField(fieldName, fieldTypeAndSize, &propertyMap, query2.value(1), zStringHelper::toBool(query.value(2).toString()));
-            if(field != nullptr){
+            zTablerow field(fieldName, fieldTypeAndSize, &propertyMap, query2.value(1), com::helper::StringHelper::toBool(query.value(2).toString()));
                 this->rows.append(field);
                 fieldcount++;
-                }
+
             }
     }
     else{
@@ -313,11 +325,15 @@ fetch the number of fields with record.count() and the name and type with record
 //    return fieldcount;
 //}
 
-int zTable::getEntities(QVector<zSQL*> *zsql, QVector<zTable*>* zentityList)
+//TODO a beolvasott táblába bele kell tenni.
+/*int zTable::getEntities(const QVector<zSQL>& zsql, QVector<zTable>* zentityList)
 {
     int entitycount2 = 0;
 
-    foreach(zSQL* a, *zsql){
+    zforeach(a, zsql){
+        //md.zsql[1].createConnection(p1.path);
+        //md.zsql[1].createConnection(p1.path);
+
         if(!a) continue;
         int entitycount = 0;
         //a->db.open();
@@ -328,7 +344,8 @@ int zTable::getEntities(QVector<zSQL*> *zsql, QVector<zTable*>* zentityList)
         query.setForwardOnly(true);// az eredményeket nem kell cachelni
 
         if(query.exec()){
-            while (query.next()) {
+            while (query.next())
+            {
                 QString tablanev = query.value(0).toString();
 
 
@@ -345,14 +362,13 @@ int zTable::getEntities(QVector<zSQL*> *zsql, QVector<zTable*>* zentityList)
 
                 //QVector<zField*> fieldList;
 
-                zTable* entity = new zTable(a, tablanev, propertyMap);
+                zTable entity(const_cast<zSQL*>(a), tablanev, propertyMap);
 
-                if(entity != nullptr){
-                    zentityList->append(entity);
-                    entitycount++;
-                    entity->getFields();
-                    }
-                }
+                entity.getFields();
+
+                zentityList->append(entity);
+                entitycount++;
+            }
         }
         else{
             if (query.lastError().isValid())
@@ -367,7 +383,7 @@ int zTable::getEntities(QVector<zSQL*> *zsql, QVector<zTable*>* zentityList)
     } //endforeach
     return entitycount2;
 }
-
+*/
 // https://regex101.com
 
 
@@ -397,7 +413,7 @@ QMap<QString, QString> zTable::getEntityProperties(QString entityProps) {
             QRegularExpressionMatch R2_match = R2_iterator.next();
             QString v = R2_match.captured(2);
             if(v.startsWith('\"')&&v.endsWith('\"')){
-                v = zStringHelper::getInner1(&v);
+                v = com::helper::StringHelper::getInner1(&v);
             }            
           /*  else if(zStringHelper::isStringIn('\[','\]')){
                 auto vl = zStringHelper::getStringIn('\"', &v).split(',',QString::SplitBehavior::SkipEmptyParts);
@@ -445,9 +461,13 @@ QMap<QString, QVariant> zTable::getEntityPropertiesJson(QString entityProps)
    return pm;
 }
 
-zField* zTable::getFieldByName(QString s){    
-    zforeach(f, this->rows){ if(QString::compare((*f)->name, s, Qt::CaseInsensitive)==0) return (*f); }
-    return NULL;
+zTablerow* zTable::getFieldByName(const QString& s){
+    zforeach(f, this->rows)
+    {
+        if(QString::compare(f->name, s, Qt::CaseInsensitive)==0)
+            return f;
+    }
+    return nullptr;
 }
 
 void zTable::toXML(QXmlStreamWriter *s)
@@ -457,22 +477,24 @@ void zTable::toXML(QXmlStreamWriter *s)
     //s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
     s->writeAttribute(nameof(this->name), this->name);
 
-    s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
-    s->writeAttribute(nameof(this->sql_schema), this->sql_schema);
+    //QString sql_conn;
+    //sql_conn = zsql->toString();
+    s->writeAttribute(nameof(sql_conn), sql_conn);
+    //s->writeAttribute(nameof(this->sql_schema), this->sql_schema);
     s->writeAttribute(nameof(this->sql_table), this->sql_table);
     s->writeAttribute(nameof(this->sql_updateTimeStamp), this->sql_updateTimeStamp.toString());
-    s->writeAttribute(nameof(this->sql_isValid), zStringHelper::boolToString(this->sql_isValid));
+    s->writeAttribute(nameof(this->sql_isValid), com::helper::StringHelper::boolToString(this->sql_isValid));
 
     s->writeAttribute(nameof(this->class_path), this->class_path);
     s->writeAttribute(nameof(this->class_name), this->class_name);
     s->writeAttribute(nameof(this->class_name_plural), this->class_name_plural);
     s->writeAttribute(nameof(this->source_updateTimeStamp), this->source_updateTimeStamp.toString());
-    s->writeAttribute(nameof(this->source_isValid), zStringHelper::boolToString(this->source_isValid));
+    s->writeAttribute(nameof(this->source_isValid), com::helper::StringHelper::boolToString(this->source_isValid));
 
     s->writeAttribute(nameof(this->docName), this->docName);
     s->writeAttribute(nameof(this->document_path), this->document_path);
     s->writeAttribute(nameof(this->document_updateTimeStamp), this->document_updateTimeStamp.toString());
-    s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
+    s->writeAttribute(nameof(this->document_isValid), com::helper::StringHelper::boolToString(this->document_isValid));
 
     s->writeAttribute(nameof(this->comment), this->comment);
 
@@ -482,7 +504,8 @@ void zTable::toXML(QXmlStreamWriter *s)
 
     s->writeStartElement(nameof(this->rows));
     // TODO row.toxml implementáció
-    //zforeach(r, this->rows){ (*r).toXML(s); }
+    zforeach(r, this->rows){ r->toXML(s); }
+
     s->writeEndElement();
 
     s->writeEndElement();
@@ -505,10 +528,10 @@ QString zTable::pkname() const
 {
     if(hasPkname())
     {
-        return this->rows[this->pkrowix]->name;//.colName;
+        return this->rows[this->pkrowix].name;//.colName;
     }
 
-    return zStringHelper::Empty;
+    return QString::null;
 }
 
 bool zTable::hasPkname() const
@@ -517,46 +540,92 @@ bool zTable::hasPkname() const
 }
 
 
-/*
-zTable zTable::fromXML(QXmlStreamReader* xml){
+QList<zTable> zTable::parseXML(const QString& txt){
+    QList<zTable> tl;
+    QXmlStreamReader xml(txt);
+    //    while(!xml.atEnd()){
+    //        xml.readNext();
+    //        if(xml.isStartElement() && (xml.name() == nameof(zTable))){
+
+    if (xml.readNextStartElement())
+    {
+        if(xml.name() == QStringLiteral("zTables"))
+        {
+            while(xml.readNextStartElement())
+            {
+                if(xml.name()==nameof(zTable))
+                {
+                    zTable t = parseXML(&xml);
+                    //t.Validate(tl);
+                    tl.append(t);
+
+                }
+                else
+                {
+                    xml.skipCurrentElement();
+                }
+            }
+        }
+        else if(xml.name() == QStringLiteral("zTable"))
+        {
+            zTable t = parseXML(&xml);
+            //t.Validate(tl);
+            tl.append(t);
+        }
+        else
+        {
+            xml.skipCurrentElement();
+        }
+    }
+    if(xml.hasError())
+    {
+        zError("createTableByXML: "+xml.errorString());
+    }
+    return tl;
+}
+
+zTable zTable::parseXML(QXmlStreamReader* xml){
     zTable t;
 
     auto a = xml->attributes();
 
-    zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(name), &(t.name));
+    t.caption = t.name;
 
-    zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
-    zXmlHelper::putXmlAttr(a, nameof(sql_schema), &(t.sql_schema));
-    zXmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
-    zXmlHelper::putXmlAttr(a, nameof(sql_isValid), &(t.sql_isValid));
-    zXmlHelper::putXmlAttr(a, nameof(sql_updateTimeStamp), &(t.sql_updateTimeStamp));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
+    //com::helper::XmlHelper::putXmlAttr(a, nameof(sql_schema), &(t.sql_schema));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(sql_isValid), &(t.sql_isValid));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(sql_updateTimeStamp), &(t.sql_updateTimeStamp));
 
-    zXmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
-    zXmlHelper::putXmlAttr(a, nameof(class_name), &(t.class_name));
-    zXmlHelper::putXmlAttr(a, nameof(class_name_plural), &(t.class_name_plural));
-    zXmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
-    zXmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(class_name), &(t.class_name));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(class_name_plural), &(t.class_name_plural));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
 
-    zXmlHelper::putXmlAttr(a, nameof(docName), &(t.docName));
-    zXmlHelper::putXmlAttr(a, nameof(document_path), &(t.document_path));
-    zXmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
-    zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(docName), &(t.docName));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(document_path), &(t.document_path));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
 
-    zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
     QString pkname;
-    zXmlHelper::putXmlAttr(a, PKNAME, &(pkname));
-    zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
-    zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+    com::helper::XmlHelper::putXmlAttr(a, PKNAME, &(pkname));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
+    com::helper::XmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
 
 
-    zXmlHelper::putXmlAttr(a, QStringLiteral("tablename"), &(t.sql_table));
-    zXmlHelper::putXmlAttr(a, QStringLiteral("classname"), &(t.class_name));
-    zXmlHelper::putXmlAttr(a, QStringLiteral("classname_plural"), &(t.class_name_plural));
+    com::helper::XmlHelper::putXmlAttr(a, QStringLiteral("tablename"), &(t.sql_table));
+    com::helper::XmlHelper::putXmlAttr(a, QStringLiteral("classname"), &(t.class_name));
+    com::helper::XmlHelper::putXmlAttr(a, QStringLiteral("classname_plural"), &(t.class_name_plural));
 
-
+//TODO nincsenek sorok javítani
     if (xml->readNextStartElement() && xml->name() == "rows")
     {
-        t.rows = QList<zTablerow>();
+        //t.rows = QList<zTablerow>();
+
+        t.rows = QVector<zTablerow>();
 
         while(xml->readNextStartElement())
         {
@@ -578,12 +647,9 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     t.pkrowix = zTablerow::findIx(t.rows, pkname);
 
-    //t.props = QList<zTablerow>();
-    //tl.append(t);
-    //zlog.log("XML beolvasva: "+ t.name +xml->errorString());
     return t;
 }
-*/
+
 
 
 

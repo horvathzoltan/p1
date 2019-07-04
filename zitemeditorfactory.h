@@ -2,7 +2,7 @@
 #define ZITEMEDITORFACTORY_H
 
 #include <QItemEditorFactory>
-#include <zfield.h>
+#include <ztablerow.h>
 #include "zspinbox.h"
 #include "helpform.h"
 
@@ -15,7 +15,7 @@ public:
   QWidget* createEditor(int type, QWidget *parent) const;
   static QVariant getEditorValue(QWidget* w);
 
-  static void initEditor(QWidget*, zField*, int, QVariant);
+  static void initEditor(QWidget*, zTablerow*, int, QVariant);
 
   static void onHelpActionTriggered(QString, QString);
 

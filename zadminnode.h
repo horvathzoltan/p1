@@ -12,7 +12,7 @@ public:
     //zOperation u;
     //zOperation d;
 
-    zAdminNode(int operation_type);
+    zAdminNode();
 
     static void JsonUpdate(zOperation::opType type, QVariant*);
 private:

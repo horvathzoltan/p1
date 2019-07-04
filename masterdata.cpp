@@ -1,80 +1,109 @@
 #include "common/macrofactory/macro.h"
+#include "common/logger/log.h"
 #include "masterdata.h"
-#include "ztable.h"
-#include "common/stringhelper/stringhelper.h"
-#include "common/filehelper/filehelper.h"
-#include "common/zlog/zlog.h"
-#include "common/macrofactory/macro.h"
-#include "common/inihelper/zinihelper.h"
+//#include "ztable.h"
+#include "common/helper/string/stringhelper.h"
+#include "common/helper/file/filehelper.h"
+//#include "common/helper/ini/inihelper.h"
 
 #include "filenamehelper.h"
+#include "zini.h"
+
+#include <QFileInfo>
+
+using namespace helpers;
 
 MasterData::MasterData(QString _mainName) {
-    this->mainName = _mainName;
+    //this->name = _mainName;
 }
 
 MasterData::~MasterData() {
-    qDebug("~MasterData(void)");
-    qDeleteAll(ztables);
-    ztables.clear();
-    ztables.squeeze();
+    //qDebug("~MasterData(void)");
+    //qDeleteAll(ztables);
+    //qDeleteAll(projects);
+    //ztables.clear();
+    //ztables.squeeze();
 }
 
 // TODO MasterData -> Project
-void MasterData::load(){
-    auto fn = FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
+//void MasterData::load(){
+//    auto fn = FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
 
-    if(fn.isEmpty()){
-        zInfo(QStringLiteral("File not exist:%1").arg(fn));
-        return;
-    }
+//    if(fn.isEmpty()){
+//        zInfo(QStringLiteral("File not exist:%1").arg(fn));
+//        return;
+//    }
 
-    auto ini = zFileHelper::load(fn);
-    parseIni(ini);
+//    auto ini = zFileHelper::load(fn);
+//    parseIni(ini);
+//}
+
+QString MasterData::getFileName()
+{
+    return FileNameHelper::getProjectFileName(QString(), "projects", FileTypeHelper::FileType::ini);//path
 }
 
-void MasterData::save(){
-    auto fn = FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
 
+void MasterData::load()
+{
+    auto fn = getFileName();
+    auto txt = com::helper::FileHelper::load(fn);
+    this->parseIni(txt);
+}
+
+void MasterData::save(){    
     auto ini = this->toIni();
-    //TODO ha hiba van, jusson ki a képernyőre
-    //ha relatív path, akkor nem működik
-    zFileHelper::save(ini, fn);
+    auto fn = getFileName();//FileNameHelper::getProjectFileName(QString::null, "projects", FileTypeHelper::FileType::ini);//path
+    com::helper::FileHelper::save(ini, fn);
 }
 
 
 QString MasterData::toIni()
 {
-    QMap<QString, QString> m;
-    //QString e;
-    /*e+=QStringLiteral("# MasterData ini")+zStringHelper::NewLine+zStringHelper::NewLine;
-    e += nameof(mainName)+'='+mainName+zStringHelper::NewLine;
-    e += nameof(projectDir)+'='+projectDir+zStringHelper::NewLine;
-    return e;*/
-    m.insert(nameof(mainName), mainName);
-    m.insert(nameof(path), path);
-    return zIniHelper::toString(m, "projects");
-}
+    zIni ini(QStringLiteral("project"));
 
-void MasterData::parseIni(QString ini)
-{
-    if(ini.isEmpty()) return;
-    auto m = zIniHelper::parseIni(ini);
-    mainName = m[nameof(mainName)];
-    path = m[nameof(path)];
-}
-
-
-void MasterData::saveTables(){
-    zforeach(t,this->ztables)
+    zforeach(p, this->projects)
     {
-        zTrace();
-        QString e = (*t)->toXML();
-        zInfo(e);
-        auto fn = FileNameHelper::getProjectFileName(path, (*t)->name, FileTypeHelper::FileType::tableDef);
-        zFileHelper::save(e, fn);
+        QString fn = FileNameHelper::getProjectFileName(p->path, ini.name(), FileTypeHelper::FileType::ini, true);
+        ini.addToSection(nameof(this->projects), p->name, fn);
     }
+
+    auto e = ini.toString();
+
+    return e;
 }
 
+// projects.ini parser
+void MasterData::parseIni(const QString& txt)
+{
+    if(txt.isEmpty()) return;
+    zIni ini = zIni::parseIni(txt);
+
+    QStringList projects = ini.getSectionValues(nameof(this->projects));
+
+    int i=0;
+    zforeach(p, projects)
+    {
+        auto fn = FileNameHelper::getAbsolutFileName(*p);
+        auto projectIniTxt = com::helper::FileHelper::load(fn);
+
+        //elvileg ebből jönnek fel a projectek
+        //Project prj;
+        QFileInfo fi(fn);
+        //prj.path = fi.path();
+
+        auto prj = Project::parseIni(projectIniTxt, fi.path());
+        //home/zoli/p1Projects/feldolgozo_dir/project.ini
+//        // a project és az ini közötti rész
+
+        this->projects.append(prj);
+    }
+    //TODO itt a value az érdekes
+    // azaz a projects szekción belüli összes value - mivel kulcsokat nem tudunk
+    // illetve lehetne összes kulcs -> majd kulcsok értékei egyenként -is
+    //return;
+    //name = m[nameof(name)];
+    //path = m[nameof(path)];
+}
 
 

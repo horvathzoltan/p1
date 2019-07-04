@@ -16,15 +16,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
+    TypeHelper.cpp \
     filenamehelper.cpp \
     filetypehelper.cpp \
     #isettings.cpp \
+    project.cpp \
+    sqlhelper.cpp \
     zAbstractModel.cpp \
+    zini.cpp \
     zsettings.cpp \
     #zsettingshelper.cpp \
-    zsql.cpp \
-    zfield.cpp \
-    ztipus.cpp \
+    ztablerow.cpp \
     mainwindow.cpp \
     zproperty.cpp \
     masterdataform.cpp \
@@ -43,17 +45,19 @@ SOURCES += main.cpp \
     #zlogicexception.cpp
 
 HEADERS  += \
+    TypeHelper.h \
     filenamehelper.h \
     filetypehelper.h \
     #isettings.h \
+    project.h \
+    sqlhelper.h \
     zAbstractModel.h \
+    zini.h \
     zsettings.h \
     #zsettingshelper.h \
-    zsql.h \
-    zfield.h \
+    ztablerow.h \
     zvalidation.h \
     zexception.h \
-    ztipus.h \
     mainwindow.h \
     masterdata.h \
     zproperty.h \
@@ -101,6 +105,7 @@ LIBS += -L$$HOME/$$COMMON_LIBS/ -lmacrofactory
 LIBS += -L$$HOME/$$COMMON_LIBS/ -lshortguid
 LIBS += -L$$HOME/$$COMMON_LIBS/ -linihelper
 LIBS += -L$$HOME/$$COMMON_LIBS/ -lsettingshelper
+LIBS += -L$$HOME/$$COMMON_LIBS/ -lxmlhelper
 }
 
 QMAKE_LFLAGS += -Wl,-rpath,"/$$HOME/$$COMMON_LIBS"

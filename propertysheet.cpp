@@ -26,7 +26,7 @@
 
 //PropertySheet::PropertySheet(QSqlRelationalTableModel* model, int ix_r, QWidget *parent, QList<zControlTab> tablist, QString windowTitle) :
 
-zControl::zControl(zField* f, int ix){
+zControl::zControl(zTablerow* f, int ix){
     this->field = f;
     this->editor = nullptr;
     this->ix_c = ix;

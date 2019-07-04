@@ -2,7 +2,7 @@
 #define ZENTITY
 
 #include <QtSql/QSqlRelationalTableModel>
-#include "zsql.h"
+#include "sqlhelper.h"
 #include <QDateTime>
 #include <QXmlStreamWriter>
 //#include "zfield.h"
@@ -12,17 +12,25 @@ struct zTable //: public QSqlDatabase
 public:
   static const QString PKNAME;
 
-  zSQL* zsql;// ha null, akkor inmemory
+  zTable();
+  zTable (const QString& _tablanev, QString _caption, QString _comment, QVector<zTablerow> _fieldList );
+  zTable (QString _tablanev);
+  zTable (QString _tablanev, const QMap<QString, QString>& _props);
+
+  //~zTable();
+
+  //zSQL* zsql;// ez egy szerver connection - ha null, akkor inmemory
   // TODO name - megnevezés - a tábla egyedi azionosítója
-  QString name;     // megnevezés - a tábla egyedi azonosítója
+  QString name;     // megnevezés - a tábla egyedi azonosítója  
   //SQL:
   // sql_conn, sql_schema, sql_table, sql_updateTimeStamp, sql_isValid
   // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
   // sql adatbázis_név (pl: gloster)
   // sql tábla név (pl: atricles)
-  QString sql_conn;// ez a conn neve, de lehetne a conn is - pointerrel
-  QString sql_schema;
-  QString sql_table;//sql_table;
+//  QString sql_conn;// ez a conn neve, de lehetne a conn is - pointerrel
+//  QString sql_schema;
+  QString sql_conn;
+  QString sql_table;
   bool sql_isValid;
   QDateTime sql_updateTimeStamp;
 
@@ -66,7 +74,8 @@ public:
   //QVector<int*> elnevezes_ix; //elnevezés field indexe
   //int id_ix;
   //int parent_ix;
-  QVector<zField*> rows;
+  //QVector<zTablerow*> rows;
+  QVector<zTablerow> rows;
 
   // a megnevezés képzésének szabálya, leírója
   QString name_formatstring;
@@ -76,18 +85,14 @@ public:
   unsigned int pk_field_ix; //elvileg ez mindíg 1, neve id
   */
 
-  zTable (zSQL* _zsql, QString _tablanev, QString _caption, QString _comment, QVector<zField*> _fieldList );
-  zTable (zSQL* _zsql, QString _tablanev);
-  zTable (zSQL* _zsql, QString _tablanev, const QMap<QString, QString>& _props);
 
-  ~zTable(void);
   int getFields();
   //int getFields_old();
 
   QString toString() const;
   static QString toString(zTable *z);
 
-  static int getEntities(QVector<zSQL*>*, QVector<zTable*>*);
+  //static int getEntities(const QVector<zSQL>&, QVector<zTable> *);
   void sqlq1(int fieldcount, void(*pt2Function)(int*, QSqlQuery, void*));
 
   static QMap<QString, QString> getEntityProperties(QString entityProps);
@@ -100,16 +105,20 @@ public:
     */
   void getStringIn(QString v);
 
-  zField* getFieldByName(QString s);
+  zTablerow* getFieldByName(const QString& s);
 
 
   //void saveTablaToXML();
   QString toXML();
-  void toXML(QXmlStreamWriter*);
-  //static zTable fromXML(QXmlStreamReader* xml);
+
+  static QList<zTable> parseXML(const QString& txt);
 
   QString pkname() const;
   bool hasPkname() const;
+
+  private:
+      void toXML(QXmlStreamWriter*);
+      static zTable parseXML(QXmlStreamReader* xml);
 };
 
 /*
