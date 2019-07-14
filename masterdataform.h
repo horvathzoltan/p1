@@ -64,7 +64,7 @@ private slots:
 
 private:
     Ui::masterDataForm *ui;
-    int zentity_ix=-1; // a kiválasztott entitás indexe
+    int selectedTable_ix=-1; // a kiválasztott entitás indexe
 
     NotEditableDelegate ned;
    // QSignalMapper *pSignalMapper;

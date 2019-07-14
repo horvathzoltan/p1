@@ -5,6 +5,7 @@
 //#include "masterdata.h"
 #include "zexception.h"
 #include "globals.h"
+#include "common/logger/log.h"
 
 //extern MasterData md;
 
@@ -43,9 +44,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_menuHelp_triggered()
 {
-     qDebug()<<"on_menuHelp_triggered";
+    zTrace();
 }
 
+// a masterdata ablakot hozza be
+// tudni kell ki az user
+// tudni kell, mi a joga - nem a string kellene, hanem valamilyen szabály (pl helyettesítés figyelembevételével)
+// tudni kell, milyen művelet van megnyitva - ha ez, akkor nem kell csinálni semmit
+
+// egy project - egy menü - amiben a project műveletei vannak - pl a project törzsadat-szerkesztője
+// a projectben műveleteket lehet végezni, ezek folyamatok
 void MainWindow::on_MasterDataEditorAction_triggered()
 {
 /*

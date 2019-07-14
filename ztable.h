@@ -20,7 +20,7 @@ public:
   //~zTable();
 
   //zSQL* zsql;// ez egy szerver connection - ha null, akkor inmemory
-  // TODO name - megnevezés - a tábla egyedi azionosítója
+
   QString name;     // megnevezés - a tábla egyedi azonosítója  
   //SQL:
   // sql_conn, sql_schema, sql_table, sql_updateTimeStamp, sql_isValid
@@ -60,6 +60,15 @@ public:
   // name_formatstring
 
   // TODO megnevezés  - valós időben kell megszerezni a tábla egyedi azonosítója - neve alapján
+  // vagy akkor kell felülírni, amikor a tr megváltozik, vagy kell egy függvény, ami mindíg lekérdezi
+  // az előző esetben egyszerkérdezzük le, a másodikban mindíg
+  // ezen felül fennáll, hogy ha a fordítás változik, az ui-t is újra ki kell rakni
+  // pl az ablakon delül a táblanév listában az egyes elemeket - azaz neveket le kell fordítani és megváltoztatni
+  // nem kell törölni, hanem a meglevőket kellene jól mmegváltoztatni
+  // a listába kell a név mellé egy wordcode
+  // illetve mindennek kell egy wordcode - ami a fordításokhoz mint kulcs szerepel
+  // és mindennek van egy localname-ja ami az adott nyelv és wordcode - mint fordítási paraméterek által meghatározott érték
+  // az egyes projectek fordításai tr/loccode.ini-ben vannak - kell egy default
   QString caption;//Felhasználó
   //updateTime
 

@@ -27,9 +27,6 @@ void SqlHelper::getSecret(const QString& prjPath, const QString& d, const QStrin
     if(ini.contains(k))
     {
         QString u2;
-        // meg kell keresni a legutolsót
-        //zforeach(v, ini.values(k))
-
         auto l = ini.values(k);
         int ix=-1;
         for(int i=0;i<l.length();i++){
@@ -40,32 +37,9 @@ void SqlHelper::getSecret(const QString& prjPath, const QString& d, const QStrin
             com::helper::StringHelper::split2(l[ix], ';', nullptr, p);
         }
 
-        //it dekódolni kell a p-t - p = decode(v2);
+        //TODO it dekódolni kell a p-t - p = decode(v2);
     }
 }
-
-//TODO ha zöbb user is van: tudni kell kit keresünk - ezt meg kell adni, a táblával menteni kell, az usereket dekódolni, és ha megvan, akkor az ő jelszavát is
-//void zSQL::createConnection(const QString& prjPath){
-//    //db = new QSqlDatabase(); //http://www.qtcentre.org/threads/45208-QSqlDatabase-best-practices-with-long-running-application
-//    if(QSqlDatabase::contains(connectionName)) return;
-//    db = QSqlDatabase::addDatabase(driverName, connectionName);
-//    db.setHostName(hostName);
-//    db.setDatabaseName(databaseName);
-
-//    QString password;
-//    getSecret(prjPath, driverName, hostName, databaseName, userName, &password);
-
-//    db.setUserName(userName);
-//    db.setPassword(password);
-//    db.setConnectOptions(QStringLiteral("MYSQL_OPT_CONNECT_TIMEOUT=10"));
-
-//    auto isOK = db.open();
-
-//    if(!isOK)
-//    {
-//        zError(db.lastError().text());
-//    }
-//}
 
 QString SqlHelper::getLastErrorText(){
     return db.lastError().text();
@@ -135,12 +109,12 @@ QString SqlHelper::insert(const QString& connStr, const QString& connPrj){
     db.setPassword(password);
     db.setConnectOptions(QStringLiteral("MYSQL_OPT_CONNECT_TIMEOUT=10"));
 
-    auto isOK = db.open();
+//    auto isOK = db.open();
 
-    if(!isOK)
-    {
-        zError(db.lastError().text());
-    }
+//    if(!isOK)
+//    {
+//        zError(db.lastError().text());
+//    }
 
     connstr.insert(connectionName, connStr);
     connprj.insert(connectionName, connPrj);
@@ -151,5 +125,16 @@ QSqlDatabase SqlHelper::getDb(const QString& conn){
     return QSqlDatabase::database(conn);
 }
 
+void SqlHelper::openDb(const QString& conn){
+    auto db = getDb(conn);
+    if (db.isOpen()) return;
+    db.open();
+    }
+
+void SqlHelper::closeDb(const QString& conn){
+        auto db = getDb(conn);
+        if (!db.isOpen()) return;
+        db.close();
+    }
 } // namespace helpers
 

@@ -12,7 +12,7 @@ public:
     FileNameHelper();
     static void init(QWidget *w, zSettings *s);
     static QString getProjectFileName(const QString&, const QString& fn, FileTypeHelper::FileType ft, bool isRelative = false);
-    static QString getSettingsFileName();
+    static QString getUserSettingsFileName();
     static QString getAbsolutFileName(const QString&);
 private:
     static QWidget* mainWidget;

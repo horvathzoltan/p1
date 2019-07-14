@@ -56,12 +56,16 @@ void masterDataForm::setEntityList(QList<zListItem> *ptr)
 // a funkció bezárására be kell zárni a connt - close, majd remove
 void masterDataForm::tableChanged(){
     auto p1 = md.projects[0];
-    zTable t = p1.tables[zentity_ix];
+    zTable t = p1.tables[selectedTable_ix];
+    static QString lastconnName;
 
-   // qDebug() << "EntityTypeSelected" << "name=" +item->text() <<" index=" << zentity_ix;
+    if(lastconnName != t.sql_conn){
+        helpers::SqlHelper::closeDb(lastconnName);
+        lastconnName= t.sql_conn;
+        helpers::SqlHelper::openDb(lastconnName);
+    }
 
-    //QSqlRelationalTableModel* model = md.zentity[zentity_ix]->getModel();
-    if(model) delete model;
+    delete model;
     model = t.getModel();
 
     // hogy állítsuk be a táblahosszt?
@@ -121,7 +125,7 @@ void masterDataForm::tableChanged(){
 
 void masterDataForm::on_listWidget_tabla_itemClicked(QListWidgetItem *item)
 {
-    zentity_ix = item->data(Qt::UserRole).toInt();
+    selectedTable_ix = item->data(Qt::UserRole).toInt();
     tableChanged();
 }
 
@@ -130,7 +134,7 @@ void masterDataForm::on_pushButton_tabla_clicked()
    QListWidgetItem *item = ui->listWidget_tabla->currentItem();
    if(!item) return;
 
-   zentity_ix = item->data(Qt::UserRole).toInt();
+   selectedTable_ix = item->data(Qt::UserRole).toInt();
    tableChanged();
 }
 
@@ -149,7 +153,7 @@ void masterDataForm::CreateUpdate(int ix_r)
     //zOperation *op = new zOperation(isCreate ? zOperation::c : zOperation::u, &md.user);
 
     auto p1 = md.projects[0];
-    zTable t = p1.tables[zentity_ix];
+    zTable t = p1.tables[selectedTable_ix];
     psd.entity = &t;
 
     qDebug() <<"CreateUpdate:"<< (isCreate ? "Create ": "Update ") <<  t.toString();
@@ -241,13 +245,13 @@ void masterDataForm::Delete(int ix_r)
 // bárhol törölhető
 void masterDataForm::on_pushButton_create_clicked()
 {
-    if(zentity_ix<0) return;
+    if(selectedTable_ix<0) return;
     CreateUpdate(-1);
 }
 
 void masterDataForm::on_pushButton_update_clicked()
 {
-    if(zentity_ix<0) return;
+    if(selectedTable_ix<0) return;
 
     auto modelIndexes = ui->tableView->selectionModel()->selectedRows();
     int l = modelIndexes.length();
@@ -264,7 +268,7 @@ void masterDataForm::on_pushButton_update_clicked()
 
 void masterDataForm::on_pushButton_delete_clicked()
 {
-    if(zentity_ix<0) return;
+    if(selectedTable_ix<0) return;
 
     auto modelIndexes = ui->tableView->selectionModel()->selectedRows();
     int l = modelIndexes.length();

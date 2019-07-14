@@ -23,21 +23,13 @@ void FileNameHelper::init(QWidget *w, zSettings *s)
     settings = s;
 }
 
-//TODO getProjectFileName->DataTables
-// a projectsDir/projectDir/Data
-// ha nincs meg a dir, létre kell hozni
 QString FileNameHelper::getProjectFileName(const QString& path, const QString& fn, FileTypeHelper::FileType ft, bool isRelative)
 {
-    //TODO itt tudni kell, hogy ki a szüleje az ablaknak - initparameter
 //    if(path.isEmpty())
 //    {
-//        QWidget* dialogParent = mainWidget;
-//        //TODO be kell kérni egy könyvtárat, vagy létre kell hozni egyet
-//        //QFileDialog dialog(dialogParent);
-//        //dialog.setFileMode(QFileDialog::Directory);
-//        auto path = QFileDialog::getExistingDirectory(dialogParent, QStringLiteral("Select Output Folder"), QDir::currentPath(),
+//        auto path = QFileDialog::getExistingDirectory(mainWidget, QStringLiteral("Select Output Folder"), QDir::currentPath(),
 //                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-//        if(path.isEmpty()) return QLatin1String("");
+//        if(path.isEmpty()) return QString();
 //    }
 
     QString pdir;
@@ -94,14 +86,14 @@ QString FileNameHelper::getProjectFileName(const QString& path, const QString& f
     return fullname;
 }
 
-QString FileNameHelper::getSettingsFileName()
+QString FileNameHelper::getUserSettingsFileName()
 {
-    //TODO a telepített program mellett van egy conf, de azt a user conf felülírja
     auto conf = QDir::home().path()+QStringLiteral("/.config/%1/%2.conf").arg(QApplication::organizationName(),QApplication::applicationName());
         
-    auto e = QApplication::applicationDirPath();          
+    //auto e = QApplication::applicationDirPath();
 
-    return e;
+    //return e;
+    return conf;
 }
 
 

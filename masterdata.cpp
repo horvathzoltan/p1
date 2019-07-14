@@ -7,7 +7,7 @@
 //#include "common/helper/ini/inihelper.h"
 
 #include "filenamehelper.h"
-#include "zini.h"
+#include "inihelper.h"
 
 #include <QFileInfo>
 
@@ -40,7 +40,8 @@ MasterData::~MasterData() {
 
 QString MasterData::getFileName()
 {
-    return FileNameHelper::getProjectFileName(QString(), "projects", FileTypeHelper::FileType::ini);//path
+    auto e = FileNameHelper::getProjectFileName(QString(), "projects", FileTypeHelper::FileType::ini);//path
+    return e;
 }
 
 
@@ -60,7 +61,7 @@ void MasterData::save(){
 
 QString MasterData::toIni()
 {
-    zIni ini(QStringLiteral("project"));
+    IniHelper ini(QStringLiteral("project"));
 
     zforeach(p, this->projects)
     {
@@ -77,7 +78,7 @@ QString MasterData::toIni()
 void MasterData::parseIni(const QString& txt)
 {
     if(txt.isEmpty()) return;
-    zIni ini = zIni::parseIni(txt);
+    IniHelper ini = IniHelper::parseIni(txt);
 
     QStringList projects = ini.getSectionValues(nameof(this->projects));
 
@@ -87,8 +88,9 @@ void MasterData::parseIni(const QString& txt)
         auto fn = FileNameHelper::getAbsolutFileName(*p);
         auto projectIniTxt = com::helper::FileHelper::load(fn);
 
-        //elvileg ebből jönnek fel a projectek
-        //Project prj;
+
+        // Project prj - ebből kerülnek felolvasásra a projectek
+        // a [projects] szekcióban az értékek egy-egy project .ini -jére mutatnak
         QFileInfo fi(fn);
         //prj.path = fi.path();
 
@@ -98,12 +100,6 @@ void MasterData::parseIni(const QString& txt)
 
         this->projects.append(prj);
     }
-    //TODO itt a value az érdekes
-    // azaz a projects szekción belüli összes value - mivel kulcsokat nem tudunk
-    // illetve lehetne összes kulcs -> majd kulcsok értékei egyenként -is
-    //return;
-    //name = m[nameof(name)];
-    //path = m[nameof(path)];
 }
 
 

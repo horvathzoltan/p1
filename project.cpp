@@ -5,7 +5,7 @@
 #include "ztable.h"
 #include "project.h"
 #include "filenamehelper.h"
-#include "zini.h"
+#include "inihelper.h"
 
 using namespace helpers;
 
@@ -20,7 +20,7 @@ Project::Project()
 /// Menti a táblákat xml-ként a project könyvtárába
 ///
 void Project::save(){
-    zIni ini(QStringLiteral("project"));
+    IniHelper ini(QStringLiteral("project"));
 
     ini.add(nameof(name), this->name);
     zforeach(t,this->tables)
@@ -42,7 +42,7 @@ void Project::save(){
 Project Project::parseIni(const QString& txt, const QString& path)
 {
     Project p;
-    zIni ini = zIni::parseIni(txt);
+    IniHelper ini = IniHelper::parseIni(txt);
 
     p.name = ini.value(nameof(name));
     p.path = path;

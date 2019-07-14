@@ -2,19 +2,20 @@
 #define ZINI_H
 
 #include <QMap>
+namespace helpers{
 class zIniSection
 {
 
 };
 
-class zIni
+class IniHelper
 {
 public:
-    explicit zIni(const QString&);
+    explicit IniHelper(const QString&);
     void add(const QString&, const QString&);
     void addToSection(const QString&, const QString&, const QString&);
 
-    static zIni parseIni(const QString&);
+    static IniHelper parseIni(const QString&);
     QString toString();
     QString name();
     QStringList getSectionValues(const QString&);
@@ -26,5 +27,5 @@ private:
     QMap<QString,QMap<QString,QString>> sections;
 
 };
-
+} // end namespace helpers
 #endif // ZINI_H

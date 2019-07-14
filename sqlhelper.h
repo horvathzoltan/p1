@@ -38,6 +38,9 @@ public:
     //static void init(QMap<QString,QString>& conn);
     static QString insert(const QString&,const QString&);
 
+    // szükséges a QSqlRelationalTableModel konstruktorához
     static QSqlDatabase getDb(const QString&);
+    static void openDb(const QString&);
+    static void closeDb(const QString&);
 };
 } // namespace helpers

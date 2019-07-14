@@ -20,10 +20,10 @@ SOURCES += main.cpp \
     filenamehelper.cpp \
     filetypehelper.cpp \
     #isettings.cpp \
+    inihelper.cpp \
     project.cpp \
     sqlhelper.cpp \
     zAbstractModel.cpp \
-    zini.cpp \
     zsettings.cpp \
     #zsettingshelper.cpp \
     ztablerow.cpp \
@@ -49,10 +49,10 @@ HEADERS  += \
     filenamehelper.h \
     filetypehelper.h \
     #isettings.h \
+    inihelper.h \
     project.h \
     sqlhelper.h \
     zAbstractModel.h \
-    zini.h \
     zsettings.h \
     #zsettingshelper.h \
     ztablerow.h \
@@ -85,7 +85,8 @@ FORMS    += mainwindow.ui \
 
 DISTFILES += \
     ToDo.txt \
-    Entity.txt
+    Entity.txt \
+    settings.ini
 
 HOME = $$system(echo $HOME)
 COMMON_LIBS = commonlib
@@ -124,4 +125,16 @@ QMAKE_CXXFLAGS += -Wall
 
 RESOURCES += \
     resource1.qrc
+
+message($$OUT_PWD)
+
+copydata.commands = $(COPY_DIR) $$PWD/settings.ini $$OUT_PWD
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata
+
+
+
+
 

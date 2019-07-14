@@ -1,6 +1,15 @@
 
 1. induláskor user, role - API tömörítve binárisan kommunikál - megkapja azokat az API hívásokat amihez van role-ja, és úgy épülnek be a menübe, mint bármely helyi funkció
     - amennyiben a tömörítés változó kulcsos módszert használ, még biztonságos is
+    - belépéskor program ikon, és az egyes userek is ikonnal, névvel választhatóak
+    - a jelszavakat a program elmenti,
+
+    - bejelentkezés: ablakba megjelenik user, jelszó, beír, jelszó elkódol, userhez tartotó elkódolt jelsz megkeres, összehasonlít.
+    - ha művelet kérdi, van-e jog, akkor mivel menetközben adható jog, mindíg meg kell nézni, van-e
+    - iRoleHelper interface definiál hasRole metódust, ami kap egy usert, egy jogot, és megnézi, van-e
+    - az implementáció adatbázis alapon selecttel megnézi - sql logikával
+    - a helyi implementáció memóriában lévő user-role qmapon nézi meg - ehez kell egy Load, Save metódus
+        - ha az első kérdéskor 0 db role van, load...
 
 2. menüt kirak, minden modul a saját menüjével beépül
     - menü-> művelet időbélyeg, guid

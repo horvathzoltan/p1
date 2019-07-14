@@ -42,14 +42,19 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName(QStringLiteral("p1"));
 
     // auto fn = zSettingsHelper::getFileName();
-    // TODO user és global szintű config
-    // ami az alkalmazás mellett van, az globális
-    // ami a .configban van, az az user szintű beállítás
-    QString sfn = FileNameHelper::getSettingsFileName();
+    // az alkalmazás melletti settings.ini a globális config
+    // az user home mappájának .config/company/app.conf az user szintű config
+    // először a globális olvasódik be, majd az user, kiegészítve és/vagy felülírva az előző beállításait
+    // TODO ha nincs egyik config sem, kiírjuk a lokálist-> ehelyett
+    // ha nincs globális, kiírjuk a globálist
+    // ha nincs lokális kiírjuk a lokálist
+    // ehez el kell dönteni, a settings mely mezői lokálisak és globálisak
+    QString sfn = FileNameHelper::getUserSettingsFileName();
 
     com::helper::SettingsHelper::init(sfn, &settings);
     // ha még nincs beállítások, akkor most lesz
-    if(!com::helper::SettingsHelper::loadSettings())
+    auto isok1 = com::helper::SettingsHelper::loadSettings();
+    if(!isok1)
     {
         com::helper::SettingsHelper::saveSettings();
     }

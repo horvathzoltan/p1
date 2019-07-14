@@ -2,30 +2,30 @@
 #include "common/helper/string/stringhelper.h"
 #include <utility>
 
-#include "zini.h"
-
-zIni::zIni(const QString& n)
+#include "inihelper.h"
+namespace helpers{
+IniHelper::IniHelper(const QString& n)
 {
     this->_name = n;
 }
 
 //mainSection
-void zIni::add(const QString& k, const QString& v)
+void IniHelper::add(const QString& k, const QString& v)
 {
     mainSection[k]=v;
 }
 
-void zIni::addToSection(const QString& sn, const QString& k, const QString& v)
+void IniHelper::addToSection(const QString& sn, const QString& k, const QString& v)
 {
     sections[sn][k]=v;
 }
 
-QString zIni::name()
+QString IniHelper::name()
 {
     return _name;
 }
 
-QString zIni::toString()
+QString IniHelper::toString()
 {
     QString e;
     e+="# "+_name+com::helper::StringHelper::NewLine;
@@ -51,9 +51,10 @@ QString zIni::toString()
     return e;
 }
 
-zIni zIni::parseIni(const QString& txt)
+IniHelper IniHelper::parseIni(const QString& txt)
 {
-    zIni ini("loaded");
+    //zInfo(txt);
+    IniHelper ini("loaded");
     if(txt.isEmpty()) return ini;
 
     auto txtlist = com::helper::StringHelper::toStringList(txt);
@@ -97,7 +98,7 @@ zIni zIni::parseIni(const QString& txt)
     return ini;
 }
 
-QStringList zIni::getSectionValues(const QString& sn)
+QStringList IniHelper::getSectionValues(const QString& sn)
 {
     if(sn.isEmpty())
     {
@@ -110,16 +111,17 @@ QStringList zIni::getSectionValues(const QString& sn)
     return QStringList();
 }
 
-QString zIni::value(const QString& k)
+QString IniHelper::value(const QString& k)
 {
     if(!mainSection.contains(k)) return QString::null;
     return mainSection[k];
 }
 
-QString zIni::value(const QString& sn, const QString& k)
+QString IniHelper::value(const QString& sn, const QString& k)
 {
     if(! sections.contains(sn)) return QString::null;
     auto s = sections[sn];
     if(!s.contains(k)) return QString::null;
     return s[k];
 }
+} // end namespace helpers

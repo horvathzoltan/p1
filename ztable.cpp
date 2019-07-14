@@ -503,7 +503,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
     s->writeStartElement(nameof(this->rows));
-    // TODO row.toxml implementáció
+
     zforeach(r, this->rows){ r->toXML(s); }
 
     s->writeEndElement();
@@ -620,7 +620,6 @@ zTable zTable::parseXML(QXmlStreamReader* xml){
     com::helper::XmlHelper::putXmlAttr(a, QStringLiteral("classname"), &(t.class_name));
     com::helper::XmlHelper::putXmlAttr(a, QStringLiteral("classname_plural"), &(t.class_name_plural));
 
-//TODO nincsenek sorok javítani
     if (xml->readNextStartElement() && xml->name() == "rows")
     {
         //t.rows = QList<zTablerow>();
