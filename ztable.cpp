@@ -43,7 +43,7 @@ QSqlRelationalTableModel* zTable::getModel(){
     //if(!zsql) return nullptr;
     //qDebug() << "getModel: " << this->zsql->toString();//connectionName;// << ':' << this->tablanev;
 
-    QSqlRelationalTableModel *model = new QSqlRelationalTableModel(nullptr, db);
+    auto *model = new QSqlRelationalTableModel(nullptr, db);
 
     model->setTable(this->sql_table);
     //model->setEditStrategy(QSqlTableModel::OnManualSubmit);

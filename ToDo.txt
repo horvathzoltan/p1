@@ -11,6 +11,17 @@
     - a helyi implementáció memóriában lévő user-role qmapon nézi meg - ehez kell egy Load, Save metódus
         - ha az első kérdéskor 0 db role van, load...
 
+1a. törzsadatszerkesztő: void MainWindow::on_MasterDataEditorAction_triggered()
+    táblaválasztás: void masterDataForm::tableChanged()
+
+// TODO akkor kell új model, ha itt dbváltás volt, mivel a model a db-hez  kötődik
+// ha nem volt db vékltás, akkor csak táblát kell váltani
+
+a tábla és a crud kulcsa a model: QSqlRelationalTableModel* zTable::getModel()
+
+
+1b. TODO kell egy tr függvény, ami lefordítja a formot
+
 2. menüt kirak, minden modul a saját menüjével beépül
     - menü-> művelet időbélyeg, guid
     - ha van fent újabb a megvalósító dll-ből, le kell szedni

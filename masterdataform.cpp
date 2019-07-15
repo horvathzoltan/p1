@@ -15,6 +15,7 @@
 #include "globals.h"
 #include "zadminnode.h"
 #include "common/macrofactory/macro.h"
+#include "common/logger/log.h"
 
 
 masterDataForm::masterDataForm(QWidget *parent) : QWidget(parent)
@@ -39,12 +40,12 @@ masterDataForm::~masterDataForm()
 */
 void masterDataForm::setEntityList(QList<zListItem> *ptr)
 {
-    foreach(zListItem e, *ptr){
-        QListWidgetItem *item = new QListWidgetItem(e.name);
-        item->setData(Qt::UserRole, e.index);
-        item->setToolTip("hint - " + e.name);
+    zforeach(e, *ptr){
+        auto *item = new QListWidgetItem(e->name);
+        item->setData(Qt::UserRole, e->index);
+        item->setToolTip("hint - " + e->name);
         ui->listWidget_tabla->addItem(item);
-        };
+        };        
 }
 
 //void masterDataForm::on_pushButton_clicked()
@@ -64,6 +65,9 @@ void masterDataForm::tableChanged(){
         lastconnName= t.sql_conn;
         helpers::SqlHelper::openDb(lastconnName);
     }
+
+    // TODO akkor kell új model, ha itt dbváltás volt, mivel a model a db-hez  kötődik
+    // ha nem volt db vékltás, akkor csak táblát kell váltani
 
     delete model;
     model = t.getModel();
@@ -116,7 +120,7 @@ void masterDataForm::tableChanged(){
             }
         }
     else{
-        qDebug() << "model is nullptr";
+            zInfo(QStringLiteral("model is nullptr"));
 
         //return 1;
     }
