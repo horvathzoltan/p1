@@ -27,12 +27,12 @@ void zUser::getRoles(){
     }
 }
 
-bool zUser::isInRole(QString r){
+bool zUser::hasRole(const QString& r){
     if(isAuth && roles.length()>0){
         return roles.contains(r);
     }
-    else
-        return false;
+
+    return false;
 }
 
 QString zUser::getUsername(){

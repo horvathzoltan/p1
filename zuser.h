@@ -16,7 +16,7 @@ private:
 public:
     zUser();
     void Login(QString);
-    bool isInRole(QString r);
+    bool hasRole(const QString& r);
     QString getUsername();
 };
 

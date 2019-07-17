@@ -24,6 +24,29 @@ masterDataForm::masterDataForm(QWidget *parent) : QWidget(parent)
     ui->setupUi(this);
     model = nullptr;
     //qDebug("Form kész");
+
+    QList<zListItem> sl1;
+
+    auto p1 = md.projects[0];
+    for(int i=0;i<p1.tables.length();i++)
+    {
+        zTable e = p1.tables[i];
+        sl1.append({e.caption, i});
+
+
+        //         if(e!=nullptr)
+        //         {
+        //             sl1.append({e->caption, i});
+        //         }
+        //         else
+        //         {
+        //             qDebug() <<"NULL";
+        //         }
+    };
+
+
+    setEntityList(&sl1);
+
 }
 
 masterDataForm::~masterDataForm()
@@ -86,7 +109,7 @@ void masterDataForm::tableChanged(){
             if(f.name == "id" || f.name=="admin" || f.name=="active" || f.name=="inactive"){
                 ui->tableView->setItemDelegateForColumn(i, &ned);
 
-                if(md.user.isInRole("admin"))
+                if(md.user.hasRole("admin"))
                     ui->tableView->setColumnHidden(i, true);
             }
         }

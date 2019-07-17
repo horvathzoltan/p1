@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     ui = new Ui::MainWindow;
     ui->setupUi(this);
+    pSignalMapper = nullptr;
   // createActions();
 }
 
@@ -47,7 +48,10 @@ void MainWindow::on_menuHelp_triggered()
     zTrace();
 }
 
-// a masterdata ablakot hozza be
+// TODO be kell léptetni a mókust
+// ha debug, és a gép a fejlesztői listában van, akkor ő a devel
+// amúgy feljön az ablak, és beírja
+// de ha ő a devel, akkor 3-tól visszaszámol és belép
 // tudni kell ki az user
 // tudni kell, mi a joga - nem a string kellene, hanem valamilyen szabály (pl helyettesítés figyelembevételével)
 // tudni kell, milyen művelet van megnyitva - ha ez, akkor nem kell csinálni semmit
@@ -56,39 +60,11 @@ void MainWindow::on_menuHelp_triggered()
 // a projectben műveleteket lehet végezni, ezek folyamatok
 void MainWindow::on_MasterDataEditorAction_triggered()
 {
-/*
- * if(userHasRole("MDE"))//MasterDataEditor
-*/
 
+    if(!md.user.hasRole(QStringLiteral("user"))) return;
 
-     delete w;
-
-     auto *w = new masterDataForm();
-     QList<zListItem> sl1;
-
-     auto p1 = md.projects[0];
-     for(int i=0;i<p1.tables.length();i++)
-     {
-         zTable e = p1.tables[i];
-           sl1.append({e.caption, i});
-
-
-//         if(e!=nullptr)
-//         {
-//             sl1.append({e->caption, i});
-//         }
-//         else
-//         {
-//             qDebug() <<"NULL";
-//         }
-     };
-
-
-     w->setEntityList(&sl1);
-
-     //delete sl1;
-
-     this->addWidget(w);
+    delete w;
+    this->addWidget(new masterDataForm());
 }
 
 
